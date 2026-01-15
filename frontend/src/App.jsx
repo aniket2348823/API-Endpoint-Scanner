@@ -90,18 +90,18 @@ function App() {
 
     return (
         <div className="container">
-            <h1>Aether-Titan v100 Infinity-Singularity</h1>
+            <h1>Antigravity Logic Assessment Engine</h1>
 
             {/* V100 Sovereign Midnight Cyber Dashboard */}
             <Dashboard />
 
             <div className="grid">
                 <div className="card control-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <h2>Sovereign Control Center</h2>
+                    <h2>Assessment Control</h2>
                     <div className="input-group">
                         <input
                             type="text"
-                            placeholder="Enter Target Intent Scope (e.g. global-infrastructure.io)"
+                            placeholder="Enter Target URL (e.g., http://localhost:5001)"
                             value={targetUrl}
                             onChange={(e) => setTargetUrl(e.target.value)}
                             disabled={isScanning}
@@ -110,16 +110,16 @@ function App() {
 
                     <div className="actions">
                         <button onClick={startScan} disabled={isScanning} className="start-btn">
-                            {isScanning ? 'INDUCING SINGULARITY...' : '🚀 INITIATE INFINITE-SCOPE STRIKE'}
+                            {isScanning ? 'ASSESSMENT IN PROGRESS...' : 'START LOGIC SCAN'}
                         </button>
                     </div>
                     {statusMessage && <p className="message">{statusMessage}</p>}
                 </div>
 
                 <div className="card console-card">
-                    <h2>Live Singularity Console</h2>
+                    <h2>Live Logic Stream</h2>
                     <div className="console-window">
-                        {logs.length === 0 && <span className="console-placeholder">Awaiting Sovereign Commandments...</span>}
+                        {logs.length === 0 && <span className="console-placeholder">Waiting for target...</span>}
                         {logs.map((log, index) => (
                             <div key={index} className="log-entry">{log}</div>
                         ))}
@@ -129,7 +129,7 @@ function App() {
             </div>
 
             <div className="card full-width">
-                <h2>Singularity History</h2>
+                <h2>Assessment History</h2>
                 <table>
                     <thead>
                         <tr>
@@ -145,9 +145,9 @@ function App() {
                                 <td>{scan.id}</td>
                                 <td>{new Date(scan.timestamp).toLocaleString()}</td>
                                 <td className={scan.status.toLowerCase()}>{scan.status}</td>
-                                <td>
+                                <td className="text-right">
                                     {scan.status === 'Completed' && (
-                                        <button onClick={() => downloadReport(scan.id)}>Download ZKP Report</button>
+                                        <button onClick={() => downloadReport(scan.id)}>Download Report</button>
                                     )}
                                 </td>
                             </tr>

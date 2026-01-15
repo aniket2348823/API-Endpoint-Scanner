@@ -207,6 +207,19 @@ class ScanOrchestrator:
                                 await self.queue.put(jf['evidence'])
                         else:
                              self._add_finding(jf)
+                
+                # Phase 1.5: HTML Spidering (Basic)
+                if 'text/html' in resp.get('headers', {}).get('Content-Type', ''):
+                    # Simple regex for finding hrefs to avoid bs4 overhead in async loop, or use bs4 if preferred
+                    # Using regex for speed and simplicity in this demo context
+                    hrefs = re.findall(r'href=[\'"]?([^\'" >]+)', resp['text'])
+                    for href in hrefs:
+                        full_url = urljoin(url, href)
+                        # Only follow same-domain links
+                        if urlparse(full_url).netloc == self.domain:
+                            if full_url not in self.visited:
+                                await self.queue.put(full_url)
+
 
                 # Phase 4 / Phase 3 Singularity Exploitation
                 

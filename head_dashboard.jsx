@@ -41,11 +41,11 @@ const Dashboard = () => {
             <div className="flex justify-between items-center border-b border-cyan-900 pb-4 mb-8">
                 <h1 className="text-2xl font-bold tracking-tighter flex items-center gap-3">
                     <Shield className="animate-pulse text-cyan-400" />
-                    AETHER-TITAN // INFINITY-SINGULARITY v100.0
+                    ANTIGRAVITY // LOGIC-ASSESSMENT-ENGINE v2.0
                 </h1>
                 <div className="flex gap-6 text-sm">
-                    <span className="flex items-center gap-2"><Globe size={16} /> SWARM: ACTIVE</span>
-                    <span className="flex items-center gap-2 text-green-400"><Cpu size={16} /> L7_DESYNC: STABLE</span>
+                    <span className="flex items-center gap-2"><Globe size={16} /> ENGINE: ONLINE</span>
+                    <span className="flex items-center gap-2 text-green-400"><Cpu size={16} /> THREADS: OPTIMIZED</span>
                 </div>
             </div>
 
@@ -57,9 +57,9 @@ const Dashboard = () => {
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                     className="bg-gray-900/50 border border-cyan-900 p-6 rounded-lg"
                 >
-                    <h3 className="text-xs uppercase tracking-widest text-gray-400 mb-4">Swarm Distribution</h3>
+                    <h3 className="text-xs uppercase tracking-widest text-gray-400 mb-4">Concurrent Thread Pool</h3>
                     <div className="text-4xl font-bold mb-2">{nodes}</div>
-                    <p className="text-xs text-cyan-700">ACTIVE LAMBDA NODES (US-EAST-1, EU-WEST-1)</p>
+                    <p className="text-xs text-cyan-700">ACTIVE WORKERS (ASYNC LOOP)</p>
                     <div className="mt-6 h-2 bg-gray-800 rounded-full overflow-hidden">
                         <motion.div
                             initial={{ width: 0 }} animate={{ width: '85%' }}
@@ -70,20 +70,17 @@ const Dashboard = () => {
 
                 {/* Q-Learning State Hunter */}
                 <div className="bg-gray-900/50 border border-cyan-900 p-6 rounded-lg md:col-span-2">
-                    <h3 className="text-xs uppercase tracking-widest text-gray-400 mb-4">Business Logic Exploration (Q-Table)</h3>
+                    <h3 className="text-xs uppercase tracking-widest text-gray-400 mb-4">Logic Flow Analysis</h3>
                     <div className="space-y-3">
                         <div className="flex justify-between text-xs border-b border-gray-800 pb-2">
-                            <span>STATE_PATH</span><span>REWARD_Q</span><span>STATUS</span>
+                            <span>ENDPOINT</span><span>SEVERITY</span><span>TYPE</span>
                         </div>
                         {findings.map((finding, i) => (
                             <div key={i} className="flex justify-between text-sm py-1 font-bold">
-                                <span className="text-white">{finding.path}</span>
-                                <span className="text-cyan-400">+{90 - (i * 20)}.52</span>
+                                <span className="text-white">{finding.Endpoint || finding.endpoint || "N/A"}</span>
+                                <span className="text-cyan-400">{finding.Severity || finding.severity || "INFO"}</span>
                                 <span className="text-white font-mono break-all text-sm">
-                                    <span className="text-cyan-400 font-bold">TYPE:</span> {finding.Type || finding.type || "Unknown_Vuln"} <br />
-                                    <span className="text-cyan-400 font-bold">SEVERITY:</span> {finding.Severity || finding.severity || "INFO"} <br />
-                                    <span className="text-cyan-400 font-bold">ENDPOINT:</span> {finding.Endpoint || finding.endpoint || finding.url || "N/A"} <br />
-                                    <span className="text-cyan-400 font-bold">EVIDENCE:</span> <span className="text-gray-300">{finding.Evidence || finding.evidence || "No Detail"}</span>
+                                    {finding.Type || finding.type || "Unknown_Vuln"}
                                 </span>
                             </div>
                         ))}
@@ -96,13 +93,12 @@ const Dashboard = () => {
                 <div className="flex-1 bg-red-900/10 border border-red-900 p-6 rounded-lg">
                     <div className="flex items-center gap-3 mb-4">
                         <Zap className="text-red-500" />
-                        <h2 className="text-red-500 font-bold uppercase tracking-tighter">Critical Vulnerability Chain Detected</h2>
+                        <h2 className="text-red-500 font-bold uppercase tracking-tighter">Critical Logic Flaws Detected</h2>
                     </div>
                     <pre className="text-xs text-red-400 leading-relaxed">
-                        {`[COMPLETE] ALERT: RACE_CONDITION_VERIFIED at /api/coupon
-[COMPLETE] VECTOR: Chronomancer Pattern (Time Delta < 5ms)
-[COMPLETE] IMPACT: Transactional Integrity Collapse (Financial P1)
-[COMPLETE] STATUS: PoC Generated.`}
+                        {`[ALERT] RACE_CONDITION detected.
+[IMPACT] Financial Integrity Compromised (Double-Spend).
+[STATUS] Proof-of-Concept Generated.`}
                     </pre>
                 </div>
 
@@ -111,8 +107,8 @@ const Dashboard = () => {
                     className="w-1/3 bg-cyan-900/20 border border-cyan-500 p-6 rounded-lg flex flex-col justify-center items-center gap-4"
                 >
                     <Shield size={48} className="text-cyan-400" />
-                    <h3 className="text-xl font-bold text-center text-cyan-400">SOVEREIGN REPORT READY</h3>
-                    <p className="text-xs text-center text-cyan-600">Encrypting Proof-of-Concept Data...</p>
+                    <h3 className="text-xl font-bold text-center text-cyan-400">ASSESSMENT COMPLETE</h3>
+                    <p className="text-xs text-center text-cyan-600">Report Ready for Download</p>
                     <button
                         onClick={async () => {
                             try {
@@ -130,12 +126,12 @@ const Dashboard = () => {
                                     alert("No scan history found.");
                                 }
                             } catch (e) {
-                                alert("Failed to link to Singularity Core.");
+                                alert("Failed to fetch report.");
                             }
                         }}
                         className="bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-3 px-8 rounded shadow-[0_0_20px_#06b6d4] transition-all"
                     >
-                        DOWNLOAD SOVEREIGN PDF
+                        DOWNLOAD REPORT
                     </button>
                 </motion.div>
             </div>

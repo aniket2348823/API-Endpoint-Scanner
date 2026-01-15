@@ -58,26 +58,23 @@ class ScanManager:
             def on_finding_callback(finding):
                  self.current_findings.append(finding)
 
-            from antigravity.titan_core import AetherTitanOmniscience
-
-            titan = AetherTitanOmniscience()
+            # Real Orchestrator Scan
+            from antigravity.orchestrator import ScanOrchestrator
             
-            # Run async scan synchronously in this thread
-            # 1. v5000.0 Singularity Mode (Simulated/Symbolic)
-            asyncio.run(titan.commence_singularity(
+            # Initialize Real Orchestrator
+            orchestrator = ScanOrchestrator(
                 target_url, 
                 on_log=on_log_callback, 
-                on_finding=on_finding_callback,
-                scan_mode=scan_mode
-            ))
+                on_finding=on_finding_callback
+            )
             
-            # 2. Classic Orchestrator Mode (Real Network Recon - OPTIONAL if Singularity covers it)
-            # Keeping Orchestrator as fallback or parallel if needed, but for "Advanced" demo, Titan is key.
-            # Commenting out Orchestrator to avoid double-scanning or confusion unless needed.
-            # orchestrator = ScanOrchestrator(...)
-            # asyncio.run(orchestrator.run_scan())
+            # Run the real scan (includes Race Condition & IDOR checks)
+            # This is NOT simulated. It actually hits the target.
+            scan_result = asyncio.run(orchestrator.run_scan())
             
-            # Strict JSON Schema for Reporting
+            # Use real findings for the report
+            # The orchestrator fills self.current_findings via the callback
+
             
             # Strict JSON Schema for Reporting
             final_report = {
