@@ -7,4 +7,5 @@ aiohttp
 aiolimiter
 aiodns
 brotli
-gunicorn
+flask-socketio
+eventlet

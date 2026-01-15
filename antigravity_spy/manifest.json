@@ -1,0 +1,38 @@
+{
+    "manifest_version": 3,
+    "name": "Antigravity // Logic Interceptor",
+    "version": "2.0",
+    "description": "Passive Traffic Capture for Logic Assessment",
+    "permissions": [
+        "scripting",
+        "activeTab"
+    ],
+    "host_permissions": [
+        "http://localhost:3000/*",
+        "http://localhost:5001/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "http://localhost:3000/*"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "run_at": "document_start"
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "ghost.js"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
+}

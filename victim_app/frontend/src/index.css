@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    .animate-in {
+        animation-duration: 300ms;
+        animation-fill-mode: both;
+    }
+}

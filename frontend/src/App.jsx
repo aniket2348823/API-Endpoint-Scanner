@@ -1,162 +1,130 @@
-import React, { useState, useEffect, useRef } from 'react'
-import Dashboard from './components/Dashboard';
-import { Shield, Search, AlertTriangle, FileText, Activity } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react'
+import { io } from 'socket.io-client'
+import Dashboard from './components/Dashboard'
 import './App.css'
 
 function App() {
-    const [isScanning, setIsScanning] = useState(false)
-    const [history, setHistory] = useState([])
-    const [statusMessage, setStatusMessage] = useState('')
-    const [targetUrl, setTargetUrl] = useState('')
-    const [logs, setLogs] = useState([])
-    const logsEndRef = useRef(null)
+    const [transactions, setTransactions] = useState([])
 
-    // Use Prod URL if Env Var is missing (Fallback for easy deployment)
-    const API_URL = '' // Use relative path to leverage Vite proxy
-
-    const fetchStatus = async () => {
-        try {
-            const res = await fetch(`${API_URL}/api/status`)
-            const data = await res.json()
-            setIsScanning(data.is_scanning)
-            if (data.logs) {
-                setLogs(data.logs)
-            }
-        } catch (err) {
-            console.error("Failed to fetch status", err)
-        }
-    }
-
-    const fetchHistory = async () => {
-        try {
-            const res = await fetch(`${API_URL}/api/history`)
-            const data = await res.json()
-            setHistory(data)
-        } catch (err) {
-            console.error("Failed to fetch history", err)
-        }
-    }
-
+    // Real-Time Socket Connection
     useEffect(() => {
-        fetchStatus()
-        fetchHistory()
-        const interval = setInterval(() => {
-            fetchStatus()
-            fetchHistory() // Polling for updates
-        }, 1000) // Faster polling for real-time feel
-        return () => clearInterval(interval)
-    }, [])
+        const socket = io('http://localhost:5000');
 
-    useEffect(() => {
-        logsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }, [logs])
+        socket.on('connect', () => {
+            setLogs(prev => [...prev, `[SYSTEM] Uplink Established (SocketIO Active)`])
+        });
 
-    const startScan = async () => {
-        if (!targetUrl) {
-            setStatusMessage("Please enter a Target URL.")
-            return
+        socket.on('status', (data) => {
+            if (data.msg) setStatusMessage(data.msg);
+        });
+
+        socket.on('traffic_log', (data) => {
+            const timestamp = new Date().toLocaleTimeString();
+            // Optional: Filter out noisy static assets
+            const msg = `[MIRROR] ${data.method} ${data.url}`;
+            setLogs(prev => {
+                const newLogs = [...prev, `[${timestamp}] ${msg}`];
+                return newLogs.slice(-50);
+            });
+            setStatusMessage(`Analyzing: ${data.url}`);
+        });
+
+        // Listen for Retroactive Analysis Verdicts
+        socket.on('ledger_update', (tx) => {
+            setTransactions(prev => [...prev, tx]);
+            // Also log it
+            setLogs(prev => [...prev, `[AUDITOR] New Transaction Logged: ${tx.id} (${tx.status})`]);
+        });
+
+        // Polling fallback
+        const interval = setInterval(fetchStatus, 2000);
+
+        return () => {
+            socket.disconnect();
+            clearInterval(interval);
         }
-        try {
-            setStatusMessage("Inducing Singularity...")
-            setLogs([]) // Clear previous logs
-            const res = await fetch(`${API_URL}/api/scan`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ target_url: targetUrl })
-            })
-            if (res.status === 409) {
-                setStatusMessage("Singularity Induction in progress.")
-            } else if (res.ok) {
-                setStatusMessage("Singularity Induction started.")
-                setIsScanning(true)
-            } else {
-                setStatusMessage("Error starting Singularity.")
-            }
-            fetchHistory()
-        } catch (err) {
-            setStatusMessage("Network error.")
-        }
+    }, []);
+
+    const triggerReplay = (id) => {
+        // Emit replay event
+        const socket = io('http://localhost:5000'); // Re-using connection or keeping a ref would be better
+        // ideally store socket in ref, but for now:
+        socket.emit('replay_race', { id });
+        setStatusMessage(`EXECUTING HAMMER PROTOCOL ON ${id}...`);
     }
 
-    const downloadReport = (scanId) => {
-        const url = `${API_URL}/api/report/${scanId}`;
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', '');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
+    // ... (keep fetchStatus)
 
     return (
-        <div className="container">
-            <h1>Antigravity Logic Assessment Engine</h1>
-
-            {/* V100 Sovereign Midnight Cyber Dashboard */}
-            <Dashboard />
-
-            <div className="grid">
-                <div className="card control-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <h2>Assessment Control</h2>
-                    <div className="input-group">
-                        <input
-                            type="text"
-                            placeholder="Enter Target URL (e.g., http://localhost:5001)"
-                            value={targetUrl}
-                            onChange={(e) => setTargetUrl(e.target.value)}
-                            disabled={isScanning}
-                        />
-                    </div>
-
-                    <div className="actions">
-                        <button onClick={startScan} disabled={isScanning} className="start-btn">
-                            {isScanning ? 'ASSESSMENT IN PROGRESS...' : 'START LOGIC SCAN'}
-                        </button>
-                    </div>
-                    {statusMessage && <p className="message">{statusMessage}</p>}
-                </div>
-
-                <div className="card console-card">
-                    <h2>Live Logic Stream</h2>
-                    <div className="console-window">
-                        {logs.length === 0 && <span className="console-placeholder">Waiting for target...</span>}
-                        {logs.map((log, index) => (
-                            <div key={index} className="log-entry">{log}</div>
-                        ))}
-                        <div ref={logsEndRef} />
-                    </div>
-                </div>
+        <div className="bg-black min-h-screen text-cyan-500 font-mono selection:bg-cyan-900 selection:text-white">
+            {/* Background Grid Effect */}
+            <div className="fixed inset-0 z-0 pointer-events-none opacity-10"
+                style={{
+                    backgroundImage: 'linear-gradient(#06b6d4 1px, transparent 1px), linear-gradient(90deg, #06b6d4 1px, transparent 1px)',
+                    backgroundSize: '40px 40px'
+                }}>
             </div>
 
-            <div className="card full-width">
-                <h2>Assessment History</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Time</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {history.map(scan => (
-                            <tr key={scan.id}>
-                                <td>{scan.id}</td>
-                                <td>{new Date(scan.timestamp).toLocaleString()}</td>
-                                <td className={scan.status.toLowerCase()}>{scan.status}</td>
-                                <td className="text-right">
-                                    {scan.status === 'Completed' && (
-                                        <button onClick={() => downloadReport(scan.id)}>Download Report</button>
-                                    )}
-                                </td>
+            <div className="relative z-10 p-6 max-w-7xl mx-auto space-y-6">
+                {/* Header */}
+                <header className="flex justify-between items-end border-b border-cyan-900/50 pb-4">
+                    <div>
+                        <h1 className="text-4xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">
+                            ANTIGRAVITY
+                        </h1>
+                        <p className="text-xs text-cyan-400/60 mt-1 uppercase tracking-[0.2em]">
+                            Logic Assessment Engine v2.0 // SINGULARITY
+                        </p>
+                    </div>
+                    <div className="text-right">
+                        <div className="text-xs text-cyan-500/50 uppercase">System Status</div>
+                        <div className="text-sm font-bold animate-pulse text-green-400">
+                            {isScanning ? 'ACTIVE SCANNING' : 'OPERATIONAL'}
+                        </div>
+                    </div>
+                </header>
+
+                {/* Control Deck */}
+                <Dashboard
+                    status={statusMessage}
+                    logs={logs}
+                    history={history}
+                    transactions={transactions}
+                    onReplay={triggerReplay}
+                />
+
+
+                <div className="card full-width mt-6 p-4 border border-cyan-900 bg-black/50 backdrop-blur-md">
+                    <h2 className="text-xl font-bold mb-4">Assessment History</h2>
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="border-b border-cyan-800 text-cyan-300">
+                                <th className="p-2">ID</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th className="text-right">Actions</th>
                             </tr>
-                        ))}
-                        {history.length === 0 && <tr><td colSpan="4">No scans found.</td></tr>}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {history.map(scan => (
+                                <tr key={scan.id} className="border-b border-cyan-900/30 hover:bg-cyan-900/20">
+                                    <td className="p-2 text-cyan-600">#{scan.id}</td>
+                                    <td>{new Date(scan.timestamp).toLocaleString()}</td>
+                                    <td className={scan.status === 'Completed' ? 'text-green-500' : 'text-yellow-500'}>{scan.status}</td>
+                                    <td className="text-right">
+                                        {scan.status === 'Completed' && (
+                                            <button onClick={() => downloadReport(scan.id)} className="text-xs bg-cyan-900 hover:bg-cyan-700 text-white px-2 py-1 rounded">Download Report</button>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                            {history.length === 0 && <tr><td colSpan="4" className="p-4 text-center text-gray-500">No scans found.</td></tr>}
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
-        </div >
+        </div>
     )
 }
 

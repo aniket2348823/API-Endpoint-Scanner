@@ -52,6 +52,23 @@ class ScanOrchestrator:
         if self.on_log:
             self.on_log(msg)
 
+    def inject_url(self, url):
+        """
+        External hook for Real-Time Traffic Mirror.
+        Allows adding URLs to the active scan dynamically.
+        """
+        if url not in self.visited:
+            # We use call_soon_threadsafe because the queue is attached to the async loop
+            # This is critical for thread-safety between Flask (Thread A) and Orchestrator (Thread B)
+            try:
+                loop = asyncio.get_running_loop()
+                loop.call_soon_threadsafe(self.queue.put_nowait, url)
+            except RuntimeError:
+                # Loop might not be accessible if called from outside, 
+                # but in this architecture, ScanManager calls this while loop is running.
+                # Fallback: Just log it if we can't inject
+                pass
+
     def _add_finding(self, finding):
         # Enforce strict JSON Schema structure where possible, but keep retro-compatibility keys if needed
         # The prompt asks for: {"Type":..., "Endpoint":..., "Severity":..., "Evidence":...}

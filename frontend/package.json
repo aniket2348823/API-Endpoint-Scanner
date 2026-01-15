@@ -15,6 +15,7 @@
     "lucide-react": "^0.554.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "socket.io-client": "^4.8.3",
     "vite": "^7.2.4"
   },
   "devDependencies": {
