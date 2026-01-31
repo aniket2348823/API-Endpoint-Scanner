@@ -1,0 +1,273 @@
+ <div className="space-y-4">
+                            <h4 className="text-xl font-semibold">Logic Attack Vectors</h4>
+                             {/* Modules Checks */}
+                            {activeScanModules.map((item, i) => (
+                               <div key={i} className="glassmorphism-card flex items-start gap-4 rounded-xl p-4">
+                                   <input 
+                                     checked={item.selected} 
+                                     onChange={() => toggleModule(i)}
+                                     className="mt-1 h-5 w-5 shrink-0 appearance-none rounded-md border-2 border-gray-500 bg-transparent checked:border-[#9b61ff] checked:bg-[#9b61ff] cursor-pointer" 
+                                     type="checkbox"
+                                   />
+                                   <div className="flex-grow">
+                                       <div className="flex items-center justify-between">
+                                           <h5 className="font-semibold">{item.name}</h5>
+                                           {item.hasSwitch && (
+                                               <div className="relative inline-block w-8 h-4 align-middle select-none transition duration-200 ease-in ml-2">
+                                                   {/* Functional Toggle Switch */}
+                                                   <div 
+                                                     onClick={(e) => toggleSwitch(e, i)}
+                                                     className={`w-8 h-4 rounded-full cursor-pointer transition-colors duration-300 ${item.switchState ? 'bg-[#8B5CF6]' : 'bg-gray-600'}`}
+                                                   >
+                                                      <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform duration-300 ${item.switchState ? 'translate-x-4' : 'translate-x-0'}`}></div>
+                                                   </div>
+                                               </div>
+                                           )}
+                                       </div>
+                                       <p className="text-sm text-gray-400">{item.desc}</p>
+                                   </div>
+                               </div>
+                            ))}
+                        </div>
+                    </div>
+                    {/* Interception */}
+                    <div className="col-span-1 md:col-span-2">
+                       <div className="glassmorphism-card rounded-xl p-6">
+                          <div className="mb-4 flex items-center gap-3">
+                             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black/20"><span className="material-symbols-outlined text-gray-400 text-sm">wifi_tethering</span></div>
+                             <h3 className="text-lg font-semibold">Interception Source</h3>
+                          </div>
+                          <div className="flex items-center gap-4">
+                             <div 
+                                className="flex flex-1 items-center justify-between rounded-lg bg-[#3E425E]/70 px-4 py-3 cursor-pointer"
+                                onClick={() => setIsConnected(!isConnected)}
+                             >
+                                <span className="text-sm font-medium text-white">Live Browser Feed (Chrome Ext)</span>
+                                <div className="flex items-center gap-2">
+                                   <span className={`text-sm font-medium ${isConnected ? 'text-green-400' : 'text-red-400'}`}>
+                                       {isConnected ? 'Connected' : 'Not Connected'}
+                                   </span>
+                                   <span className={`h-2 w-2 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.6)] ${isConnected ? 'bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.6)]' : 'bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.6)]'}`}></span>
+                                </div>
+                             </div>
+                          </div>
+                       </div>
+                    </div>
+                </div>
+                
+                <div className="flex flex-col gap-8 lg:col-span-1">
+                    <div className="glassmorphism-card rounded-xl p-6">
+                        <div className="mb-4 flex items-center gap-3">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black/20"><span className="material-symbols-outlined text-[#9b61ff] icon-glow">speed</span></div>
+                            <h3 className="text-lg font-semibold">Performance</h3>
+                        </div>
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <div className="flex justify-between text-sm"><span>Request Rate</span> <span className="rounded-md bg-[#3E425E]/70 px-2 py-0.5 text-xs font-medium">{requestRate} req/s</span></div>
+                                <input 
+                                    className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-[#3E425E]/70 accent-[#9b61ff]" 
+                                    max="1000" 
+                                    min="0" 
+                                    type="range" 
+                                    value={requestRate}
+                                    onChange={(e) => setRequestRate(e.target.value)}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <div className="flex justify-between text-sm"><span>Concurrency</span> <span className="rounded-md bg-[#3E425E]/70 px-2 py-0.5 text-xs font-medium">{concurrency} threads</span></div>
+                                <input 
+                                    className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-[#3E425E]/70 accent-[#9b61ff]" 
+                                    max="100" 
+                                    min="1" 
+                                    type="range" 
+                                    value={concurrency}
+                                    onChange={(e) => setConcurrency(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="glassmorphism-card rounded-xl p-6">
+                         <div className="mb-4 flex items-center gap-3">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black/20"><span className="material-symbols-outlined text-[#9b61ff] icon-glow">key</span></div>
+                            <h3 className="text-lg font-semibold">Authentication</h3>
+                        </div>
+                        <div className="grid grid-cols-3 gap-1 rounded-lg bg-[#3E425E]/70 p-1">
+                            <button onClick={() => setAuthType('Bearer')} className={getAuthBtnClass('Bearer')}>Bearer</button>
+                            <button onClick={() => setAuthType('API Key')} className={getAuthBtnClass('API Key')}>API Key</button>
+                            <button onClick={() => setAuthType('Basic')} className={getAuthBtnClass('Basic')}>Basic</button>
+                        </div>
+                        <textarea className="mt-4 block w-full rounded-lg border-0 bg-[#3E425E]/70 p-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-[#9b61ff]" placeholder={getPlaceholder()} rows="3"></textarea>
+                    </div>
+                    
+                    <div className="glassmorphism-card rounded-xl p-6 text-center">
+                        <p className="text-lg">ESTIMATED DURATION</p>
+                        <p className="my-2 text-4xl font-bold">~<span className="text-[#9b61ff] text-glow">{estimatedDuration}</span> minutes</p>
+                        <div className="my-4 h-2 w-full rounded-full bg-[#3E425E]/70">
+                            <div className="h-2 w-3/4 rounded-full bg-[#9b61ff] glow-element"></div>
+                        </div>
+                        <p className="text-sm text-gray-400">Based on {concurrency} threads scanning Active Modules.</p>
+                    </div>
+                </div>
+            </main>
+
+            <footer className="py-8 text-center text-sm text-gray-500">
+                 Antigravity API Endpoint Scanning System
+            </footer>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+// --- 4. SETTINGS COMPONENT ---
+const Settings = ({ navigate }) => {
+  const [toggles, setToggles] = useState({
+      'email-alerts': true,
+      'in-app': true,
+      'weekly-reports': true,
+      '2fa': false
+  });
+
+  const handleToggle = (id) => {
+      setToggles(prev => ({
+          ...prev,
+          [id]: !prev[id]
+      }));
+  };
+
+  return (
+    <div className="font-sans antialiased text-gray-100 min-h-screen relative overflow-x-hidden flex flex-col" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+      {/* Background is now global */}
+      
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Navigation navigate={navigate} activePage="settings" />
+
+        <main className="relative z-10 flex-grow px-6 py-8 max-w-7xl mx-auto w-full">
+            <h1 className="text-2xl md:text-3xl font-medium mb-8 text-white">Settings</h1>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <section className="glass-panel-settings rounded-2xl p-6 md:p-8 flex flex-col gap-6">
+                    <h2 className="text-xl font-medium text-gray-200">Account Settings</h2>
+                    <div className="space-y-4">
+                        <div className="flex flex-col gap-2">
+                            <label className="text-xs text-gray-400 uppercase tracking-wider font-medium pl-1">Username</label>
+                            <input className="w-full bg-[#1E212B] border-transparent focus:border-[#8B5CF6] focus:ring-0 rounded-lg px-4 py-3 text-gray-200 text-sm transition-all outline-none placeholder-gray-500" type="text" defaultValue="username"/>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label className="text-xs text-gray-400 uppercase tracking-wider font-medium pl-1">Email</label>
+                            <input className="w-full bg-[#1E212B] border-transparent focus:border-[#8B5CF6] focus:ring-0 rounded-lg px-4 py-3 text-gray-200 text-sm transition-all outline-none placeholder-gray-500" type="email" defaultValue="target.om@apluvi.com"/>
+                        </div>
+                    </div>
+                    <button className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-medium py-3 rounded-lg shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all transform hover:scale-[1.01] active:scale-[0.99] text-sm mt-2">
+                        Save Changes
+                    </button>
+                </section>
+                
+                <section className="glass-panel-settings rounded-2xl p-6 md:p-8 flex flex-col gap-6">
+                    <h2 className="text-xl font-medium text-gray-200">Notifications</h2>
+                    <div className="flex flex-col gap-6 mt-2">
+                        {[
+                            { id: 'email-alerts', label: 'Email Alerts' },
+                            { id: 'in-app', label: 'In-App Notifications' },
+                            { id: 'weekly-reports', label: 'Weekly Reports' }
+                        ].map(item => (
+                            <div key={item.id} className="flex items-center justify-between pb-4 border-b border-gray-700/50">
+                                <span className="text-sm text-gray-300">{item.label}</span>
+                                <div className="relative inline-block w-10 h-6 align-middle select-none transition duration-200 ease-in">
+                                    <div 
+                                        onClick={() => handleToggle(item.id)}
+                                        className={`w-10 h-6 rounded-full cursor-pointer transition-colors duration-300 relative ${toggles[item.id] ? 'bg-[#8B5CF6]' : 'bg-gray-600'}`}
+                                    >
+                                        <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 ${toggles[item.id] ? 'translate-x-4' : 'translate-x-0'}`}></div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+                
+                <section className="glass-panel-settings rounded-2xl p-6 md:p-8 flex flex-col gap-6 lg:col-span-2">
+                    <h2 className="text-xl font-medium text-gray-200">API & Security</h2>
+                    <div className="flex flex-col gap-2">
+                        <label className="text-xs text-gray-400 uppercase tracking-wider font-medium pl-1">Gemini API Key</label>
+                        <div className="flex gap-3">
+                            <input className="flex-grow bg-[#1E212B] border-transparent focus:border-[#8B5CF6] focus:ring-0 rounded-lg px-4 py-3 text-gray-200 text-sm transition-all outline-none tracking-widest" readOnly type="password" value="sk_test_51Mz93kL2p9s8d7f6g5h4j3k2l1"/>
+                            <button className="bg-[#8B5CF6]/20 hover:bg-[#8B5CF6]/30 text-[#8B5CF6] border border-[#8B5CF6]/20 font-medium px-4 py-2 rounded-lg text-xs md:text-sm whitespace-nowrap transition-colors">
+                                Test Connection
+                            </button>
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-2 pt-4 border-t border-gray-700/50">
+                        <span className="text-sm text-gray-300">2FA</span>
+                        <div className="relative inline-block w-10 h-6 align-middle select-none transition duration-200 ease-in">
+                            <div 
+                                onClick={() => handleToggle('2fa')}
+                                className={`w-10 h-6 rounded-full cursor-pointer transition-colors duration-300 relative ${toggles['2fa'] ? 'bg-[#8B5CF6]' : 'bg-gray-600'}`}
+                            >
+                                <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 ${toggles['2fa'] ? 'translate-x-4' : 'translate-x-0'}`}></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+      
+        <footer className="relative z-10 w-full py-6 text-center">
+            <p className="text-xs text-gray-600 font-medium">Antigravity API Endpoint Scanning System</p>
+        </footer>
+      </div>
+    </div>
+  );
+};
+
+
+// --- 5. LIBRARY COMPONENT ---
+const Library = ({ navigate }) => {
+  return (
+    <div className="font-[Inter] min-h-screen relative overflow-x-hidden transition-colors duration-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+      {/* Background is now global */}
+      <div className="noise-overlay"></div>
+      
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Navigation navigate={navigate} activePage="library" />
+
+        <main className="flex-grow px-8 py-8 max-w-[1400px] mx-auto w-full">
+            <div className="mb-10">
+                <h1 className="text-3xl font-bold text-white mb-2">Library</h1>
+                <p className="text-gray-400 text-sm font-light tracking-wide opacity-80">Browse and manage your collection of scanning modules and attack scripts.</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[
+                  { title: "SQL Injection Probe", desc: "Advanced module to detect various SQLi vulnerabilities.", tags: ["Injection", "Database"] },
+                  { title: "Doppelganger (IDOR)", desc: "Automated detection of Insecure Direct Object Reference by manipulating resource IDs.", tags: ["IDOR", "Auth", "Logic"] },
+                  { title: "Auth Bypass Tester", desc: "Scripts to test for broken authentication logic.", tags: ["Auth", "Logic"] },
+                  { title: "JWT Token Cracker", desc: "Attempts to brute-force weak JWT secrets.", tags: ["Crypto", "Auth"] },
+                  { title: "API Fuzzer (REST)", desc: "Automated fuzzing for RESTful API endpoints.", tags: ["Fuzzing", "API"] },
+                  { title: "Chronomancer (Race Condition)", desc: "Advanced race condition testing engine for transactional API endpoints using precise timing.", tags: ["Race Condition", "Logic", "Concurrency"] }
+                ].map((mod, i) => (
+                    <div key={i} className="glass-card-lib rounded-xl p-6 flex flex-col h-full hover:border-purple-500/30 transition-all duration-300 group">
+                        <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-purple-300 transition-colors">{mod.title}</h3>
+                        <p className="text-gray-400 text-xs mb-4 leading-relaxed flex-grow">{mod.desc}</p>
+                        <div className="flex flex-wrap gap-2 mb-6">
+                            {mod.tags.map(tag => (
+                                <span key={tag} className="px-3 py-1 rounded-full text-[10px] font-medium bg-[rgba(45,212,191,0.1)] border border-[rgba(45,212,191,0.3)] text-[#99f6e4]">{tag}</span>
+                            ))}
+                        </div>
+                        <div className="mt-auto w-full flex justify-end">
+                             <button className="px-5 py-2 rounded-lg border border-purple-500/50 text-purple-300 text-xs font-medium hover:bg-purple-500/20 hover:border-purple-400 transition-all shadow-[0_0_10px_rgba(168,85,247,0.1)] hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] w-full">
+                                View Module
+                             </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </main>
+        
+        <footer className="w-full py-6 text-center text-xs text-gray-600 font-light">
+            Antigravity API Endpoint Scanning System
+        </footer>
+      </div>
+    </div>
+  );
+};

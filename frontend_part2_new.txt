@@ -1,0 +1,356 @@
+ <div className="glass-panel-dash rounded-2xl p-6">
+            <h3 className="text-sm font-medium text-gray-200 mb-4">Recent Activity</h3>
+            <div className="space-y-0">
+               {[
+                 { color: 'bg-green-500', shadow: 'shadow-[0_0_5px_rgba(34,197,94,0.6)]', text: 'Scan "Midnight Logic Break" completed', time: '2 hours ago' },
+                 { color: 'bg-purple-500', shadow: 'shadow-[0_0_5px_rgba(168,85,247,0.6)]', text: 'New module "XSS Scanner" added to Library', time: '5 hours ago' },
+                 { color: 'bg-red-500', shadow: 'shadow-[0_0_5px_rgba(239,68,68,0.6)]', text: 'Critical vulnerability detected in "Weekly Full Scan"', time: '1 day ago' },
+                 { color: 'bg-green-500', shadow: 'shadow-[0_0_5px_rgba(34,197,94,0.6)]', text: 'Scan "API Fuzzer" started', time: '1 day ago' }
+               ].map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between py-3 border-b border-white/5 hover:bg-white/5 transition-colors px-2 -mx-2 rounded-lg cursor-default group">
+                    <div className="flex items-center gap-3">
+                        <div className={`w-2 h-2 rounded-full ${item.color} ${item.shadow}`}></div>
+                        <span className="text-sm text-gray-300">{item.text}</span>
+                    </div>
+                    <span className="text-xs text-gray-400 group-hover:text-gray-200 transition-colors">{item.time}</span>
+                </div>
+               ))}
+            </div>
+          </div>
+        </main>
+        
+        <footer className="w-full text-center py-6 text-xs text-gray-600 relative z-10">
+           Antigravity API Endpoint Scanning System
+        </footer>
+      </div>
+    </div>
+  );
+};
+
+
+// --- 2. SCANS COMPONENT ---
+const Scans = ({ navigate }) => {
+  const starsRef = useRef(null);
+
+  useEffect(() => {
+    if (starsRef.current) {
+      starsRef.current.innerHTML = ''; 
+      for(let i=0; i<300; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() * 1.5;
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.opacity = Math.random() * 0.4 + 0.1;
+        starsRef.current.appendChild(star);
+      }
+    }
+  }, []);
+
+  return (
+    <div className="min-h-screen relative overflow-x-hidden text-gray-200">
+      <div className="stars-container fixed top-0 left-0 w-full h-full z-[-1] overflow-hidden pointer-events-none" ref={starsRef}></div>
+
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Navigation navigate={navigate} activePage="scans" />
+
+        <main className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-8 w-full flex-grow">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+                <div>
+                    <h1 className="text-[32px] font-semibold text-white mb-2">Scans</h1>
+                    <p className="text-gray-400 text-sm font-light">View and manage your past and running security assessments.</p>
+                </div>
+                <button onClick={() => navigate('newscan')} className="bg-[#8A2BE2] hover:bg-[#7c26cc] text-white px-5 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 shadow-glow transition-all">
+                    <span className="material-symbols-outlined text-sm">add</span>
+                    New Scan
+                </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <div className="metric-card bg-card-gradient-purple rounded-xl p-6 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-600/10 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none"></div>
+                    <div className="flex justify-between items-start mb-4">
+                        <span className="text-sm font-medium text-purple-100/80">Total Scans</span>
+                        <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center border border-purple-500/30 shadow-[0_0_10px_rgba(168,85,247,0.2)]">
+                            <span className="material-symbols-outlined text-purple-300 text-sm">dns</span>
+                        </div>
+                    </div>
+                    <div className="text-[32px] font-bold text-white tracking-tight">152</div>
+                </div>
+                
+                <div className="metric-card bg-card-gradient-green rounded-xl p-6 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none"></div>
+                    <div className="flex justify-between items-start mb-4">
+                        <span className="text-sm font-medium text-emerald-100/80">Active Scans</span>
+                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] mt-1.5 mr-1.5"></div>
+                    </div>
+                    <div className="text-[32px] font-bold text-white tracking-tight">3</div>
+                </div>
+                
+                <div className="metric-card bg-card-gradient-orange rounded-xl p-6 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-orange-600/10 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none"></div>
+                    <div className="flex justify-between items-start mb-4">
+                        <span className="text-sm font-medium text-orange-100/80">Failed</span>
+                        <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center border border-orange-500/30 shadow-[0_0_10px_rgba(249,115,22,0.2)]">
+                            <span className="material-symbols-outlined text-orange-300 text-sm">warning</span>
+                        </div>
+                    </div>
+                    <div className="text-[32px] font-bold text-white tracking-tight">47</div>
+                </div>
+                
+                <div className="metric-card bg-card-gradient-red rounded-xl p-6 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-red-600/10 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none"></div>
+                    <div className="flex justify-between items-start mb-4">
+                        <span className="text-sm font-medium text-red-100/80">Total Scans</span>
+                        <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center border border-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.2)]">
+                            <span className="material-symbols-outlined text-red-300 text-sm">error</span>
+                        </div>
+                    </div>
+                    <div className="text-[32px] font-bold text-white tracking-tight">12</div>
+                </div>
+            </div>
+
+            <div className="glass-panel rounded-2xl overflow-hidden shadow-glass">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm whitespace-nowrap glass-table">
+                        <thead>
+                            <tr className="border-b border-white/5">
+                                <th className="pl-8 pr-6">Status</th>
+                                <th className="px-6">Scan Name</th>
+                                <th className="px-6">Target Scope</th>
+                                <th className="px-6">Modules</th>
+                                <th className="px-6">Duration</th>
+                                <th className="px-6 pr-8">
+                                    <div className="flex items-center gap-1 cursor-pointer hover:text-white transition-colors">
+                                        Completed 
+                                        <span className="material-symbols-outlined text-xs">arrow_downward</span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5 text-gray-300">
+                            <tr className="hover:bg-white/[0.02] transition-colors group">
+                                <td className="pl-8 pr-6 py-5">
+                                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-[#1e2338] text-blue-400 border border-blue-500/30">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_6px_#3b82f6]"></span>
+                                        Running
+                                    </span>
+                                </td>
+                                <td className="px-6 py-5 font-medium text-white">Midnight Logic Break</td>
+                                <td className="px-6 py-5 text-gray-400 font-mono text-xs tracking-wide">e.g., *.target.com/epluvi/*</td>
+                                <td className="px-6 py-5">
+                                    <div className="flex gap-1.5">
+                                        <div className="w-7 h-7 rounded bg-[#252038] flex items-center justify-center border border-purple-500/20 group-hover:border-purple-500/40 transition-colors">
+                                            <span className="material-symbols-outlined text-purple-400 text-[14px]">bug_report</span>
+                                        </div>
+                                        <div className="w-7 h-7 rounded bg-[#252038] flex items-center justify-center border border-purple-500/20 group-hover:border-purple-500/40 transition-colors">
+                                            <span className="material-symbols-outlined text-purple-400 text-[14px]">shield</span>
+                                        </div>
+                                        <div className="w-7 h-7 rounded bg-[#252038] flex items-center justify-center border border-purple-500/20 group-hover:border-purple-500/40 transition-colors">
+                                            <span className="text-purple-400 text-[10px] font-bold">%</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-5 text-gray-300">205 minutes</td>
+                                <td className="px-6 pr-8 py-5">
+                                    <div className="flex items-center justify-between gap-6">
+                                        <span className="text-gray-400 text-xs">Mar 08, 2021, 08:35</span>
+                                        <button className="bg-[#8A2BE2] hover:bg-[#7c26cc] text-white px-3 py-1.5 rounded-md text-[11px] font-medium flex items-center gap-1.5 transition-all shadow-[0_0_10px_rgba(138,43,226,0.2)]">
+                                            <span className="material-symbols-outlined text-sm">download</span>
+                                            PDF Download
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr className="hover:bg-white/[0.02] transition-colors group">
+                                <td className="pl-8 pr-6 py-5">
+                                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-[#1a2f30] text-teal-400 border border-teal-500/30">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-teal-400"></span>
+                                        Completed
+                                    </span>
+                                </td>
+                                <td className="px-6 py-5 font-medium text-white">Midnight Logic Break</td>
+                                <td className="px-6 py-5 text-gray-400 font-mono text-xs tracking-wide">e.g., *.target.com/apluvi/*</td>
+                                <td className="px-6 py-5">
+                                    <div className="flex gap-1.5">
+                                        <div className="w-7 h-7 rounded bg-[#252038] flex items-center justify-center border border-purple-500/20 group-hover:border-purple-500/40 transition-colors">
+                                            <span className="material-symbols-outlined text-purple-400 text-[14px]">bug_report</span>
+                                        </div>
+                                        <div className="w-7 h-7 rounded bg-[#252038] flex items-center justify-center border border-purple-500/20 group-hover:border-purple-500/40 transition-colors">
+                                            <span className="material-symbols-outlined text-purple-400 text-[14px]">lock</span>
+                                        </div>
+                                        <div className="w-7 h-7 rounded bg-[#252038] flex items-center justify-center border border-purple-500/20 group-hover:border-purple-500/40 transition-colors">
+                                            <span className="material-symbols-outlined text-purple-400 text-[14px]">public</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-5 text-gray-300">45 minutes</td>
+                                <td className="px-6 pr-8 py-5">
+                                    <div className="flex items-center justify-between gap-6">
+                                        <span className="text-gray-400 text-xs">Mar 08, 2021, 08:35</span>
+                                        <button className="bg-[#8A2BE2] hover:bg-[#7c26cc] text-white px-3 py-1.5 rounded-md text-[11px] font-medium flex items-center gap-1.5 transition-all shadow-[0_0_10px_rgba(138,43,226,0.2)]">
+                                            <span className="material-symbols-outlined text-sm">download</span>
+                                            PDF Download
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <footer className="mt-8 pb-8 text-center text-xs text-gray-500">
+            <p>Antigravity API Endpoint Scanning System © 2023</p>
+        </footer>
+      </div>
+    </div>
+  );
+};
+
+
+// --- 3. NEW SCAN COMPONENT ---
+const NewScan = ({ navigate }) => {
+  const [authType, setAuthType] = useState('Bearer');
+  const [activeScanModules, setActiveScanModules] = useState([
+      { name: 'Chronomancer', desc: '(Race Condition)', selected: false },
+      { name: 'Doppelganger', desc: '(IDOR)', selected: false },
+      { name: 'Raw TCP Last Site Sync', desc: '(Force Concurrency)', selected: true, hasSwitch: true, switchState: true }
+  ]);
+  const [isConnected, setIsConnected] = useState(false);
+  const [requestRate, setRequestRate] = useState(450);
+  const [concurrency, setConcurrency] = useState(50);
+  const [estimatedDuration, setEstimatedDuration] = useState(45); // Initial state
+
+  useEffect(() => {
+    // Placeholder for real extension handshake
+    const handleMessage = (event) => {
+        if (event.data?.type === 'ANTIGRAVITY_EXTENSION_CONNECTED') {
+            setIsConnected(true);
+        }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  // Recalculate duration whenever relevant state changes
+  useEffect(() => {
+      // Calculate duration logic
+      const activeModuleCount = activeScanModules.filter(m => m.selected).length;
+      const baseMinutesPerModule = 15; 
+      const passiveTime = 10;
+      
+      const calculated = Math.round(
+        (passiveTime + (activeModuleCount * baseMinutesPerModule)) * (50 / Math.max(concurrency, 1)) * // Avoid division by zero
+        (450 / Math.max(requestRate, 10)) // Avoid division by zero/tiny numbers
+      );
+      setEstimatedDuration(Math.max(calculated, 1)); // Minimum 1 minute
+  }, [activeScanModules, requestRate, concurrency]);
+
+
+  const toggleModule = (index) => {
+      const updated = [...activeScanModules];
+      updated[index].selected = !updated[index].selected;
+      setActiveScanModules(updated);
+  };
+
+  const toggleSwitch = (e, index) => {
+      e.stopPropagation(); // prevent triggering parent row click if needed
+      const updated = [...activeScanModules];
+      updated[index].switchState = !updated[index].switchState;
+      setActiveScanModules(updated);
+  };
+
+  const getAuthBtnClass = (type) => 
+    `rounded-md py-1.5 text-sm font-medium transition-all ${
+      authType === type 
+        ? 'bg-[#9b61ff] text-white text-glow shadow-[0_0_10px_rgba(155,97,255,0.4)]' 
+        : 'text-gray-400 hover:text-white hover:bg-white/5'
+    }`;
+
+  const getPlaceholder = () => {
+      if (authType === 'API Key') return 'Enter X-API-KEY or similar...';
+      if (authType === 'Basic') return 'username:password base64 string...';
+      return 'Paste your Bearer token...';
+  };
+
+  return (
+    <div className="text-white min-h-screen w-full overflow-x-hidden relative" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+      {/* Background is now global */}
+      
+      <div className="relative z-10 flex flex-col min-h-screen">
+        
+        <Navigation navigate={navigate} activePage="scans" />
+
+        {/* Main Content Wrapper - Aligned with Navigation */}
+        <div className="flex-grow mx-auto max-w-7xl px-6 lg:px-8 w-full">
+            <div className="my-12 flex flex-wrap items-center justify-between gap-6">
+                <div>
+                    <h2 className="text-4xl font-bold tracking-tighter">New Scan Configuration</h2>
+                    <p className="mt-2 text-base text-gray-300">Configure target scope, modules, and performance parameters for a new security assessment.</p>
+                </div>
+                <div className="flex items-center gap-4">
+                    <button onClick={() => navigate('scans')} className="flex h-11 items-center justify-center gap-2 rounded-lg bg-[#2D304A]/80 px-4 text-base font-medium transition-colors hover:bg-[#3E425E]/90">
+                        <span className="material-symbols-outlined text-xl">description</span>
+                        Reports
+                    </button>
+                    <button onClick={() => navigate('scans')} className="glow-element flex h-11 items-center justify-center gap-2 rounded-lg bg-[#9b61ff] px-5 text-base font-semibold text-white transition-transform hover:scale-105">
+                        <span className="material-symbols-outlined text-xl">rocket_launch</span>
+                        Launch Scan
+                    </button>
+                </div>
+            </div>
+
+            <main className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+                <div className="flex flex-col gap-8 lg:col-span-2">
+                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                        <div className="glassmorphism-card rounded-xl p-6">
+                            <div className="mb-4 flex items-center gap-3">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black/20"><span className="material-symbols-outlined text-gray-400">settings</span></div>
+                                <h3 className="text-lg font-semibold">General Information</h3>
+                            </div>
+                            <div className="space-y-4">
+                                <label className="block">
+                                    <span className="text-sm font-medium text-gray-300">SCAN TITLE</span>
+                                    <input className="mt-1 block w-full rounded-lg border-0 bg-[#3E425E]/70 p-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-[#9b61ff]" placeholder="Ultimate Precision Blueprint" type="text"/>
+                                </label>
+                                <button className="w-full rounded-lg bg-[#3E425E]/70 py-2.5 text-sm font-medium transition-colors hover:bg-[#3E425E]/90">LOAD PRESET</button>
+                            </div>
+                        </div>
+                        <div className="glassmorphism-card rounded-xl p-6">
+                            <div className="mb-4 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black/20"><span className="material-symbols-outlined text-gray-400">target</span></div>
+                                    <h3 className="text-lg font-semibold">Target Scope</h3>
+                                </div>
+                                <button className="rounded-md bg-[#3E425E]/70 px-3 py-1 text-xs font-medium transition-colors hover:bg-[#3E425E]/90">Import from file</button>
+                            </div>
+                            <textarea className="block w-full rounded-lg border-0 bg-[#3E425E]/70 p-3 text-white placeholder-gray-400 focus:ring-2 focus:ring-[#9b61ff]" placeholder="Enter IPs, Domains, or CIDR blocks (one per line)..." rows="4"></textarea>
+                            <div className="mt-3 flex items-center justify-between">
+                                <span className="rounded-md bg-[#3E425E]/70 px-2 py-1 text-xs font-medium">0 targets defined</span>
+                                <label className="flex cursor-pointer items-center gap-2 text-sm">
+                                    <input className="peer sr-only" type="checkbox"/>
+                                    <div className="relative h-6 w-11 rounded-full bg-gray-700 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#9b61ff]/50 peer-checked:after:translate-x-full peer-checked:after:border-white peer-checked:after:bg-[#9b61ff]"></div>
+                                    <span className="text-gray-300">Verify reachability</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                        <div className="space-y-4">
+                            <h4 className="text-xl font-semibold">Interception Filters</h4>
+                            {/* Modules Checks */}
+                            {[
+                              { name: 'Financial Logic', desc: 'Financial Logic (e.g., cert, balance' },
+                              { name: 'Privilege Escalation', desc: 'Privilege Escalation (e.g., admin, role)' },
+                              { name: 'PII Data', desc: '(e.g., email, uuid)' }
+                            ].map((item, i) => (
+                               <div key={i} className="glassmorphism-card flex items-start gap-4 rounded-xl p-4">
+                                   <input defaultChecked={i!==1} className="mt-1 h-5 w-5 shrink-0 appearance-none rounded-md border-2 border-gray-500 bg-transparent checked:border-[#9b61ff] checked:bg-[#9b61ff]" type="checkbox"/>
+                                   <div><h5 className="font-semibold">{item.name}</h5><p className="text-sm text-gray-400">{item.desc}</p></div>
+                               </div>
+                            ))}
+                        </div>

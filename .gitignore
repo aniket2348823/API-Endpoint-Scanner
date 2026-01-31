@@ -1,0 +1,11 @@
+node_modules/
+__pycache__/
+.git_backup*/
+*.log
+*.lock
+dist/
+build/
+coverage/
+.DS_Store
+.env
+venv/

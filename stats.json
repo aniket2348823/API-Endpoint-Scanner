@@ -1,0 +1,112 @@
+{
+    "scans": [
+        {
+            "id": "7065c529-1f5b-4cca-80c8-e3ba3cffc1bb",
+            "status": "Completed",
+            "name": "http://testasp.vulnweb.com/",
+            "scope": "http://testasp.vulnweb.com/",
+            "modules": [
+                "Singularity V5"
+            ],
+            "timestamp": "2026-01-31 02:19:29",
+            "results": [],
+            "duration": "180.00s"
+        },
+        {
+            "id": "7065c529-1f5b-4cca-80c8-e3ba3cffc1bb",
+            "status": "Initializing",
+            "name": "http://testasp.vulnweb.com/",
+            "scope": "http://testasp.vulnweb.com/",
+            "modules": [
+                "Singularity V5"
+            ],
+            "timestamp": "2026-01-31 02:19:29",
+            "results": []
+        },
+        {
+            "id": "921ed361-1968-4986-8f94-b956d5a63899",
+            "status": "Completed",
+            "name": "http://testasp.vulnweb.com",
+            "scope": "http://testasp.vulnweb.com",
+            "modules": [
+                "Singularity V5"
+            ],
+            "timestamp": "2026-01-31 01:52:55",
+            "results": [],
+            "duration": "180.00s"
+        },
+        {
+            "id": "61798905-1d5d-4f85-8853-412bcf4a5230",
+            "status": "Completed",
+            "name": "http://testasp.vulnweb.com",
+            "scope": "http://testasp.vulnweb.com",
+            "modules": [
+                "Singularity V5"
+            ],
+            "timestamp": "2026-01-31 01:37:00",
+            "results": [],
+            "duration": "180.00s"
+        },
+        {
+            "id": "756f93a0-eece-4883-8d02-ea20e1e51f4c",
+            "status": "Completed",
+            "name": "http://testasp.vulnweb.com",
+            "scope": "http://testasp.vulnweb.com",
+            "modules": [
+                "Singularity V5"
+            ],
+            "timestamp": "2026-01-31 01:18:51",
+            "results": [],
+            "duration": "180.00s"
+        },
+        {
+            "id": "900e2084-6543-4e39-ac90-1b333a9518c8",
+            "status": "Completed",
+            "name": "http://testasp.vulnweb.com",
+            "scope": "http://testasp.vulnweb.com",
+            "modules": [
+                "Singularity V5"
+            ],
+            "timestamp": "2026-01-31 00:57:44",
+            "results": [],
+            "duration": "180.00s"
+        },
+        {
+            "id": "1a0e433d-1ecf-44e0-86f3-4b2f2972b9a2",
+            "status": "Completed",
+            "name": "http://testasp.vulnweb.com",
+            "scope": "http://testasp.vulnweb.com",
+            "modules": [
+                "Singularity V5"
+            ],
+            "timestamp": "2026-01-31 00:22:06",
+            "results": [],
+            "duration": "180.00s"
+        },
+        {
+            "id": "20bfc629-1cea-426e-a229-9c27296f25b1",
+            "status": "Completed",
+            "name": "http://testasp.vulnweb.com",
+            "scope": "http://testasp.vulnweb.com",
+            "modules": [
+                "Singularity V5"
+            ],
+            "timestamp": "2026-01-31 00:20:38",
+            "results": [],
+            "duration": "180.00s"
+        }
+    ],
+    "active_scans": 7,
+    "total_scans": 14,
+    "vulnerabilities": 0,
+    "critical": 0,
+    "history": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ]
+}
