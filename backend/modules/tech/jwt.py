@@ -15,12 +15,12 @@ class JWTTokenCracker(BaseArsenalModule):
         # In a real tool, we'd parse the Authorization header from a seed request
         
         # Checking for "None" algorithm vulnerability
-        if "token=" in packet.target_url:
+        if "token=" in packet.target.url:
             vulnerabilities.append(Vulnerability(
                  name="Weak JWT Implementation",
                  severity="HIGH",
                  description="JWT found in URL parameters.",
-                 evidence=f"Token exposed in URL: {packet.target_url}",
+                 evidence=f"Token exposed in URL: {packet.target.url}",
                  remediation="Place JWTs in Authorization header or HttpOnly cookies."
             ))
 

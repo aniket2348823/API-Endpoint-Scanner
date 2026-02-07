@@ -8,7 +8,8 @@
         "activeTab",
         "scripting",
         "storage",
-        "cookies"
+        "cookies",
+        "debugger"
     ],
     "host_permissions": [
         "<all_urls>"
@@ -23,8 +24,10 @@
             ],
             "js": [
                 "content/xray.js",
+                "content/interceptor.js",
                 "content/ScannerEngine.js",
-                "content/hud.js"
+                "content/hud.js",
+                "content/vision.js"
             ],
             "css": [
                 "content/xray.css",
@@ -46,6 +49,8 @@
                 "content/xray.css",
                 "content/hud.css",
                 "content/xray.js",
+                "content/xray.js",
+                "content/interceptor.js",
                 "content/hud.js",
                 "content/ScannerEngine.js"
             ],

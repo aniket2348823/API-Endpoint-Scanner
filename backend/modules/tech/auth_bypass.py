@@ -17,15 +17,15 @@ class AuthBypassTester(BaseArsenalModule):
         try:
              async with aiohttp.ClientSession() as session:
                 # 1. Try accessing without any headers
-                async with session.get(packet.target_url) as response:
+                async with session.get(packet.target.url) as response:
                      if response.status == 200:
                          # We consider it a vuln if it's an admin/secure path
-                         if "admin" in packet.target_url or "api/secure" in packet.target_url:
+                         if "admin" in packet.target.url or "api/secure" in packet.target.url:
                              vulnerabilities.append(Vulnerability(
                                 name="Broken Access Control (No Auth)",
                                 severity="CRITICAL",
                                 description="Secure endpoint accessible without credentials.",
-                                evidence=f"GET {packet.target_url} returned 200 OK.",
+                                evidence=f"GET {packet.target.url} returned 200 OK.",
                                 remediation="Enforce authentication middleware on all secure routes."
                             ))
         except Exception:

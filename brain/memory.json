@@ -1,1 +1,64 @@
-[]
+[
+  {
+    "url": "http://test-bank.local/api/transfer",
+    "tag": "API"
+  },
+  {
+    "status": "VULN_FOUND",
+    "payload": {
+      "type": "SQLI"
+    }
+  },
+  {
+    "url": "http://test-bank.local/api/transfer",
+    "tag": "API"
+  },
+  {
+    "status": "VULN_FOUND",
+    "payload": {
+      "type": "SQLI"
+    }
+  },
+  {
+    "url": "http://test-bank.local/api/transfer",
+    "tag": "API"
+  },
+  {
+    "status": "VULN_FOUND",
+    "payload": {
+      "type": "SQLI"
+    }
+  },
+  {
+    "status": "VULN_FOUND",
+    "payload": {
+      "type": "SQLI"
+    }
+  },
+  {
+    "status": "VULN_FOUND",
+    "payload": {
+      "type": "SQLI"
+    }
+  },
+  {
+    "url": "http://test-bank.local/api/transfer",
+    "tag": "API"
+  },
+  {
+    "status": "VULN_FOUND",
+    "payload": {
+      "type": "SQLI"
+    }
+  },
+  {
+    "url": "http://test-bank.local/api/transfer",
+    "tag": "API"
+  },
+  {
+    "status": "VULN_FOUND",
+    "payload": {
+      "type": "SQLI"
+    }
+  }
+]

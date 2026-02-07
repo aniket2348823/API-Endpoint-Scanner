@@ -1,6 +1,37 @@
 {
     "scans": [
         {
+            "id": "a48a9c8b-6847-419d-b107-efc3da763245",
+            "status": "Completed",
+            "name": "http://testhtml5.vulnweb.com",
+            "scope": "http://testhtml5.vulnweb.com",
+            "modules": [
+                "The Tycoon",
+                "The Escalator",
+                "The Skipper",
+                "Doppelganger (IDOR)",
+                "Chronomancer",
+                "SQL Injection Probe",
+                "JWT Token Cracker",
+                "API Fuzzer (REST)"
+            ],
+            "timestamp": "2026-02-08 02:00:33",
+            "results": [],
+            "duration": "180.00s"
+        },
+        {
+            "id": "0dafb3ed-f7d1-4689-a28c-84e62fbd425a",
+            "status": "Completed",
+            "name": "http://testphp.vulnweb.com",
+            "scope": "http://testphp.vulnweb.com",
+            "modules": [
+                "Singularity V5"
+            ],
+            "timestamp": "2026-02-08 00:36:10",
+            "results": [],
+            "duration": "180.00s"
+        },
+        {
             "id": "7065c529-1f5b-4cca-80c8-e3ba3cffc1bb",
             "status": "Completed",
             "name": "http://testasp.vulnweb.com/",
@@ -97,7 +128,7 @@
         }
     ],
     "active_scans": 7,
-    "total_scans": 14,
+    "total_scans": 16,
     "vulnerabilities": 0,
     "critical": 0,
     "history": [
@@ -107,6 +138,13 @@
         0,
         0,
         0,
+        0,
+        0,
         0
-    ]
+    ],
+    "v6_metrics": {
+        "injections_blocked": 0,
+        "deceptive_ui_blocked": 0,
+        "risk_score": 50
+    }
 }

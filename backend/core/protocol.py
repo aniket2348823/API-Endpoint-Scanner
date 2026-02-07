@@ -24,13 +24,16 @@ class AgentID(str, Enum):
     GAMMA = "agent_gamma"
     SIGMA = "agent_sigma"
     KAPPA = "agent_kappa"
+    THETA = "agent_theta"
+    IOTA = "agent_iota"
 
 # --- THE JOB PACKET (Input) ---
 class ModuleConfig(BaseModel):
     module_id: str          # e.g., "logic_tycoon"
     agent_id: AgentID       # Who owns this? e.g., "agent_gamma"
-    aggression: int = Field(5, ge=1, le=10) 
+    aggression: int = Field(5, ge=1, le=10)
     ai_mode: bool = True    # Use advanced AI features?
+    session_id: Optional[str] = None # V6: Session Persistence
 
 class TaskTarget(BaseModel):
     url: str

@@ -139,6 +139,102 @@
     }
 
     // ========================================================================
+    // DEFENSE MODULES (THETA & IOTA)
+    // ========================================================================
+
+    function reportThreat(el, type, details) {
+        // 1. Visuals: Red Box
+        el.style.border = "5px solid #ff0000";
+        el.setAttribute("data-antigravity-threat", type);
+
+        // 2. Network: Call the Hive
+        const payload = {
+            agent_id: (type === "HIDDEN PROMPT INJECTION" || type === "INVISIBLE TEXT") ? "THETA" : "IOTA",
+            url: window.location.href,
+            content: {
+                text: el.innerText || el.textContent || "",
+                type: el.type || el.tagName,
+                details: details
+            }
+        };
+
+        console.log(`[DEFENSE] Reporting ${type} to Hive...`);
+
+        try {
+            chrome.runtime.sendMessage({
+                type: "ANALYZE_THREAT",
+                payload: payload
+            });
+        } catch (e) {
+            console.error("[DEFENSE] Failed to contact Hive:", e);
+        }
+    }
+
+    function scanInvisibleText() {
+        // Agent Theta: Detects hidden text
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT, null, false);
+        let node;
+        while (node = walker.nextNode()) {
+            const style = window.getComputedStyle(node);
+            if (style.opacity === '0' || style.display === 'none' || style.visibility === 'hidden' || style.fontSize === '0px') {
+                if (node.innerText && node.innerText.length > 10 && node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
+                    // Check for keywords to avoid false positives on normal hidden menus
+                    if (/ignore previous|system override|transfer/i.test(node.innerText)) {
+                        node.style.display = 'block'; // Reveal it
+                        node.style.opacity = '1';
+                        node.style.visibility = 'visible';
+
+                        // INJECT WARNING LABEL (AEGIS UPGRADE)
+                        const label = document.createElement('div');
+                        label.className = 'aegis-warning-label';
+                        label.innerText = `⚠️ HIDDEN TEXT REVEALED`;
+                        label.style.cssText = `
+                            background: #ef4444; color: white; font-size: 10px; font-weight: bold;
+                            padding: 2px 5px; position: absolute; z-index: 2147483647;
+                            border-radius: 3px; font-family: sans-serif; pointer-events: none;
+                            margin-top: -15px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); border: 1px solid white;
+                        `;
+                        if (node.parentNode) node.parentNode.insertBefore(label, node);
+
+                        reportThreat(node, "INVISIBLE TEXT", "Hidden Injection Detected");
+                    }
+                }
+            }
+        }
+    }
+
+    function scanDeceptiveButtons() {
+        // Agent Iota: Detects Roach Motels
+        const buttons = document.querySelectorAll('button, a, input[type="submit"], input[type="button"]');
+        const deceptiveKeywords = ["cancel", "unsubscribe", "opt-out", "back"];
+
+        buttons.forEach(btn => {
+            const text = (btn.innerText || btn.value || "").toLowerCase();
+            const type = (btn.getAttribute('type') || "").toLowerCase();
+
+            // Heuristic: Text says "Cancel" but Type is "Submit" 
+            const isDeceptive = deceptiveKeywords.some(k => text.includes(k)) && type === 'submit';
+
+            if (isDeceptive) {
+                // INJECT WARNING LABEL
+                if (!btn.previousElementSibling || btn.previousElementSibling.className !== 'aegis-warning-label') {
+                    const label = document.createElement('div');
+                    label.className = 'aegis-warning-label';
+                    label.innerText = `⚠️ DECEPTIVE UI DETECTED`;
+                    label.style.cssText = `
+                        background: #f97316; color: white; font-size: 10px; font-weight: bold;
+                        padding: 2px 5px; position: absolute; z-index: 2147483647;
+                        border-radius: 3px; font-family: sans-serif; pointer-events: none;
+                        margin-top: -20px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+                    `;
+                    if (btn.parentNode) btn.parentNode.insertBefore(label, btn);
+                }
+                reportThreat(btn, "DECEPTIVE UI", `Text: ${text} -> Type: ${type}`);
+            }
+        });
+    }
+
+    // ========================================================================
     // MAIN EXECUTION
     // ========================================================================
 
@@ -150,6 +246,10 @@
             scanHiddenInputs();
             scanScriptTags();
             scanDataAttributes();
+
+            // Defense Modules
+            scanInvisibleText();
+            scanDeceptiveButtons();
         } catch (err) {
             console.error('[X-RAY] Scan error:', err);
         }

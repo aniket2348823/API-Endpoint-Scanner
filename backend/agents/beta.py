@@ -5,6 +5,8 @@ from backend.core.protocol import JobPacket, ResultPacket, AgentID, TaskPriority
 from backend.modules.tech.sqli import SQLInjectionProbe
 from backend.modules.tech.fuzzer import APIFuzzer
 from backend.modules.tech.jwt import JWTTokenCracker
+from backend.ai.gi5 import GI5Engine
+import json
 
 class BetaAgent(BaseAgent):
     """
@@ -21,6 +23,13 @@ class BetaAgent(BaseAgent):
             "tech_fuzzer": APIFuzzer(),
             "tech_jwt": JWTTokenCracker()
         }
+        
+        # AI Integration
+        try:
+            self.ai = GI5Engine()
+        except:
+            self.ai = None
+
         
         # SOTA: Polyglots triggering multiple parsers
         self.polyglots = [
@@ -42,9 +51,9 @@ class BetaAgent(BaseAgent):
         if tag == "API":
             print(f"[{self.name}] Intercepted API Candidate: {url}. Launching Polyglot Assault.")
             
-            # SOTA: Instead of generic fuzz, inject Polyglots with WAF Mutation
+            # SOTA: AI-Driven Mutation
             mutated_polyglot = self.waf_mutate(random.choice(self.polyglots))
-            print(f"[{self.name}] >> Mutation Strategy: {mutated_polyglot}")
+            print(f"[{self.name}] >> AI Mutation Strategy: {mutated_polyglot}")
             
             # Launch Generic Fuzzer Job with advanced config
             packet = JobPacket(
@@ -62,6 +71,20 @@ class BetaAgent(BaseAgent):
 
         if packet.config.agent_id != AgentID.BETA:
             return
+
+        # DATA WIRING: Check strict module filtering
+        modules_cfg = getattr(self, "mission_config", {}).get("modules", [])
+        # Map IDs to User-Friendly Names (Simple mapping for MVP)
+        # "SQL Injection" -> "tech_sqli"
+        allowed = True
+        if modules_cfg and "Singularity V5" not in modules_cfg: # If specific selection exists
+             # Very basic mapping for demo
+             if "tech_sqli" in packet.config.module_id and "SQL Injection" not in modules_cfg: allowed = False
+             if "tech_jwt" in packet.config.module_id and "Auth Bypass" not in modules_cfg: allowed = False
+        
+        if not allowed:
+             # print(f"[{self.name}] Skipping {packet.config.module_id} (Not selected in Mission)")
+             return
             
         # Cyber-Organism Protocol: Tech Stack Alignment
         # If headers/url imply PHP, we ensure MySQL syntax
@@ -76,8 +99,19 @@ class BetaAgent(BaseAgent):
 
     def waf_mutate(self, payload: str) -> str:
         """
-        Singularity Feature: GAN-Lite Mutation
+        Singularity Feature: GAN-Lite Mutation (AI Augmented)
         """
+        # Try AI First
+        if self.ai and self.ai.enabled:
+             # Just ask for one variant
+             variants = self.ai.synthesize_payloads({"base": payload})
+             if variants:
+                 # extract just the json value if possible, or string
+                 try:
+                     return str(variants[0].get("json", {}).get("base", payload)) + " /* AI-MUTATED */"
+                 except: pass
+
+        # Fallback to random heuristics
         strategy = random.choice(["case_swap", "whitespace", "null_byte", "comment_split"])
         
         if strategy == "case_swap":
@@ -119,7 +153,7 @@ class BetaAgent(BaseAgent):
             result = await module.execute(packet)
             
             # REAL-TIME SYNC: Check if module found a vulnerability
-            if result.success and result.data:
+            if result.status in ["SUCCESS", "VULN_FOUND"] and result.data:
                 # Determine severity based on module
                 severity = "Medium"
                 if "sqli" in module_id or "jwt" in module_id:

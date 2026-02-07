@@ -7,14 +7,32 @@ const NewScan = ({ navigate }) => {
     // ... [STATE] ...
     const [authType, setAuthType] = useState('Bearer');
     const [activeScanModules, setActiveScanModules] = useState([
-        { name: 'Chronomancer', desc: '(Race Condition)', selected: false },
-        { name: 'Doppelganger', desc: '(IDOR)', selected: false },
-        { name: 'Raw TCP Last Site Sync', desc: '(Force Concurrency)', selected: true, hasSwitch: true, switchState: true }
+        { name: 'The Tycoon', desc: 'Financial logic flaws & parameter tampering', selected: true },
+        { name: 'The Escalator', desc: 'Mass Assignment & Privilege Escalation', selected: true },
+        { name: 'The Skipper', desc: 'Workflow bypass & multi-step sequence skipping', selected: true },
+        { name: 'Doppelganger (IDOR)', desc: 'Insecure Direct Object Reference detection', selected: false },
+        { name: 'Chronomancer', desc: 'Race Condition testing for transactional APIs', selected: false },
+        { name: 'SQL Injection Probe', desc: 'Deep injection testing for SQL, NoSQL, GraphQL', selected: false },
+        { name: 'JWT Token Cracker', desc: 'Cryptographic analysis of JSON Web Tokens', selected: false },
+        { name: 'API Fuzzer (REST)', desc: 'High-velocity fuzzing for RESTful endpoints', selected: false },
+        { name: 'Auth Bypass Tester', desc: 'Systematic testing of authentication gates', selected: false }
     ]);
     const [isConnected, setIsConnected] = useState(false);
     const [requestRate, setRequestRate] = useState(450);
     const [concurrency, setConcurrency] = useState(50);
     const [estimatedDuration, setEstimatedDuration] = useState(45); // Initial state
+
+    // [NEW] Interception Filters
+    const [interceptionFilters, setInterceptionFilters] = useState([
+        { name: 'Financial Logic', desc: 'Financial logic flaws & tampering', selected: true },
+        { name: 'Privilege Escalation', desc: 'Mass Assignment & role elevation', selected: true },
+        { name: 'PII Data', desc: 'Detects exposed Personally Identifiable Information (PII) in API responses', selected: true },
+        { name: 'Workflow Integrity', desc: 'Workflow bypass & sequence skipping', selected: true },
+        { name: 'Object References (IDOR)', desc: 'Insecure resource access & enumeration', selected: false },
+        { name: 'Concurrency & Timing', desc: 'Race conditions & timing attacks', selected: false },
+        { name: 'Injection & Fuzzing', desc: 'Injection vectors & input fuzzing', selected: false },
+        { name: 'Authentication Gates', desc: 'Auth bypass & token tampering', selected: false }
+    ]);
 
     // Backend Integration State
     const [targets, setTargets] = useState("");
@@ -155,7 +173,10 @@ const NewScan = ({ navigate }) => {
             method: "POST",
             headers: headers,
             velocity: parseInt(concurrency, 10),
-            body: "" // Ensure body field exists
+            body: "", // Ensure body field exists
+            // [NEW] Configuration
+            modules: activeScanModules.filter(m => m.selected).map(m => m.name),
+            filters: interceptionFilters.filter(f => f.selected).map(f => f.name)
         };
 
         setIsLaunching(true);
@@ -266,49 +287,60 @@ const NewScan = ({ navigate }) => {
                             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                                 <div className="space-y-4">
                                     <h4 className="text-xl font-semibold">Interception Filters</h4>
-                                    {/* Modules Checks */}
-                                    {[
-                                        { name: 'Financial Logic', desc: 'Financial Logic (e.g., cert, balance' },
-                                        { name: 'Privilege Escalation', desc: 'Privilege Escalation (e.g., admin, role)' },
-                                        { name: 'PII Data', desc: '(e.g., email, uuid)' }
-                                    ].map((item, i) => (
-                                        <div key={i} className="glassmorphism-card flex items-start gap-4 rounded-xl p-4">
-                                            <input defaultChecked={i !== 1} className="mt-1 h-5 w-5 shrink-0 appearance-none rounded-md border-2 border-gray-500 bg-transparent checked:border-[#9b61ff] checked:bg-[#9b61ff]" type="checkbox" />
-                                            <div><h5 className="font-semibold">{item.name}</h5><p className="text-sm text-gray-400">{item.desc}</p></div>
-                                        </div>
-                                    ))}
+                                    {/* Filters Checks */}
+                                    {/* Filters Checks */}
+                                    <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+                                        {interceptionFilters.map((item, i) => (
+                                            <div key={i} className="glassmorphism-card flex items-start gap-4 rounded-xl p-4">
+                                                <input
+                                                    checked={item.selected}
+                                                    onChange={() => {
+                                                        const updated = [...interceptionFilters];
+                                                        updated[i].selected = !updated[i].selected;
+                                                        setInterceptionFilters(updated);
+                                                    }}
+                                                    className="mt-1 h-5 w-5 shrink-0 appearance-none rounded-md border-2 border-gray-500 bg-transparent checked:border-[#9b61ff] checked:bg-[#9b61ff] cursor-pointer"
+                                                    type="checkbox"
+                                                />
+                                                <div><h5 className="font-semibold">{item.name}</h5><p className="text-sm text-gray-400">{item.desc}</p></div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 <div className="space-y-4">
                                     <h4 className="text-xl font-semibold">Logic Attack Vectors</h4>
                                     {/* Modules Checks */}
-                                    {activeScanModules.map((item, i) => (
-                                        <div key={i} className="glassmorphism-card flex items-start gap-4 rounded-xl p-4">
-                                            <input
-                                                checked={item.selected}
-                                                onChange={() => toggleModule(i)}
-                                                className="mt-1 h-5 w-5 shrink-0 appearance-none rounded-md border-2 border-gray-500 bg-transparent checked:border-[#9b61ff] checked:bg-[#9b61ff] cursor-pointer"
-                                                type="checkbox"
-                                            />
-                                            <div className="flex-grow">
-                                                <div className="flex items-center justify-between">
-                                                    <h5 className="font-semibold">{item.name}</h5>
-                                                    {item.hasSwitch && (
-                                                        <div className="relative inline-block w-8 h-4 align-middle select-none transition duration-200 ease-in ml-2">
-                                                            {/* Functional Toggle Switch */}
-                                                            <div
-                                                                onClick={(e) => toggleSwitch(e, i)}
-                                                                className={`w-8 h-4 rounded-full cursor-pointer transition-colors duration-300 ${item.switchState ? 'bg-[#8B5CF6]' : 'bg-gray-600'}`}
-                                                            >
-                                                                <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform duration-300 ${item.switchState ? 'translate-x-4' : 'translate-x-0'}`}></div>
+                                    {/* Modules Checks */}
+                                    <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+                                        {activeScanModules.map((item, i) => (
+                                            <div key={i} className="glassmorphism-card flex items-start gap-4 rounded-xl p-4">
+                                                <input
+                                                    checked={item.selected}
+                                                    onChange={() => toggleModule(i)}
+                                                    className="mt-1 h-5 w-5 shrink-0 appearance-none rounded-md border-2 border-gray-500 bg-transparent checked:border-[#9b61ff] checked:bg-[#9b61ff] cursor-pointer"
+                                                    type="checkbox"
+                                                />
+                                                <div className="flex-grow">
+                                                    <div className="flex items-center justify-between">
+                                                        <h5 className="font-semibold">{item.name}</h5>
+                                                        {item.hasSwitch && (
+                                                            <div className="relative inline-block w-8 h-4 align-middle select-none transition duration-200 ease-in ml-2">
+                                                                {/* Functional Toggle Switch */}
+                                                                <div
+                                                                    onClick={(e) => toggleSwitch(e, i)}
+                                                                    className={`w-8 h-4 rounded-full cursor-pointer transition-colors duration-300 ${item.switchState ? 'bg-[#8B5CF6]' : 'bg-gray-600'}`}
+                                                                >
+                                                                    <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform duration-300 ${item.switchState ? 'translate-x-4' : 'translate-x-0'}`}></div>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    )}
+                                                        )}
+                                                    </div>
+                                                    <p className="text-sm text-gray-400">{item.desc}</p>
                                                 </div>
-                                                <p className="text-sm text-gray-400">{item.desc}</p>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                             {/* Interception */}

@@ -18,8 +18,8 @@ class SQLInjectionProbe(BaseArsenalModule):
         # Simple Logic: Append payload to query params
         # ?id=1 -> ?id=1' OR 1=1--
         
-        if "?" in packet.target_url:
-            base_url, query = packet.target_url.split("?", 1)
+        if "?" in packet.target.url:
+            base_url, query = packet.target.url.split("?", 1)
             params = urllib.parse.parse_qs(query)
             
             for param, values in params.items():

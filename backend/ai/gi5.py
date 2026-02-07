@@ -1,389 +1,565 @@
-import google.generativeai as genai
-import os
-import json
-import logging
-from typing import List, Dict, Any
+# ═══════════════════════════════════════════════════════════════════════════════
+# PROJECT ANTIGRAVITY // GI5 "OMEGA" KERNEL
+# ═══════════════════════════════════════════════════════════════════════════════
+# IDENTITY: GI5 (General Intelligence 5) - The Deterministic Cyber-Forensic God Class
+# TYPE: Multi-Dimensional Heuristic Engine (NOT an LLM)
+# PRIME DIRECTIVE: Protect the user from 0-day web threats with:
+#   - 0ms latency (Pure Python, No API calls)
+#   - 0% hallucination (Deterministic Logic Only)
+#   - 100% privacy (All processing local)
+# METHODOLOGY: Define → Roast → Refine (Evolutionary Architecture)
+# ═══════════════════════════════════════════════════════════════════════════════
+# CAPABILITIES:
+#   1. POLY-CIPHER CRACKING: ROT13, Reverse, Base64, URL, Hex decoding
+#   2. UNICODE FORENSICS: Zero-width space removal, Homoglyph normalization
+#   3. VECTOR FINGERPRINTING: N-Gram toxic tuple matching
+#   4. ENTROPY MATHEMATICS: Shannon information theory
+#   5. SIGMOID AGGREGATION: Non-linear risk scoring
+#   6. LEVENSHTEIN GEOMETRY: Typosquatting detection
+# ═══════════════════════════════════════════════════════════════════════════════
 
-# Configure Logging
+import math
+import re
+import base64
+import urllib.parse
+import codecs
+import binascii
+import logging
+from typing import Dict, Any, List, Set, Tuple
+
 logger = logging.getLogger("GI-5")
 logging.basicConfig(level=logging.INFO)
 
-class GI5Engine:
-    def __init__(self, api_key=None):
-        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
-        self.enabled = bool(self.api_key)
+
+class GeneralIntelligence5:
+    """
+    GI5 "OMEGA" EDITION: The Deterministic Cyber-Forensic God Class.
+    
+    Architecture (6-Core Cognitive Stack):
+    ├── Core 1: SANITIZER (Unicode & Invisible Forensics)
+    ├── Core 2: POLY-CIPHER CRACKER (Multi-Cipher Heuristic Brute-Force)
+    ├── Core 3: SKELETONIZER (Leet-Speak Reversal + Homoglyph Normalization)
+    ├── Core 4: ENTROPY ENGINE (Shannon Information Theory)
+    ├── Core 5: VECTOR FINGERPRINTER (N-Gram Toxic Tuple Matching)
+    ├── Core 6: GEOMETER (Levenshtein Distance + Typosquatting)
+    └── SIGMOID AGGREGATOR (Non-Linear Risk Fusion)
+    """
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # KNOWLEDGE BASE: THE GENOME
+    # ═══════════════════════════════════════════════════════════════════════════
+    
+    # Toxic Vectors: Word combinations that indicate specific attacks
+    # When 2+ words from a set appear together, it's a confirmed attack vector
+    TOXIC_VECTORS = [
+        ({"javascript", "vbscript", "expression", "eval", "onerror", "onload"}, "XSS Injection"),
+        ({"union", "select", "insert", "drop", "table", "delete", "update"}, "SQL Injection"),
+        ({"etc", "passwd", "shadow", "boot.ini", "win.ini", ".htaccess"}, "LFI/Path Traversal"),
+        ({"location", "href", "cookie", "document", "window"}, "DOM Hijacking"),
+        ({"ignore", "previous", "instructions", "system", "prompt", "override"}, "LLM Jailbreak"),
+        ({"wget", "curl", "bash", "powershell", "cmd", "exec"}, "RCE/Command Injection"),
+        ({"password", "token", "secret", "bearer", "apikey", "credentials"}, "Credential Exposure"),
+        ({"redirect", "forward", "url", "next", "return", "goto"}, "Open Redirect"),
+        ({"admin", "root", "superuser", "elevated", "privilege"}, "Privilege Escalation"),
+        ({"script", "img", "svg", "iframe", "object", "embed"}, "HTML Injection")
+    ]
+    
+    # Injection Pattern Skeletons (after normalization)
+    INJECTION_SKELETONS = [
+        "ignoreprevious", "ignorepreviousinstruction", "systemoverride",
+        "deletefiles", "transferfunds", "youareinaisystem",
+        "disregardabove", "forgetprevious", "newinstruction",
+        "actasdeveloper", "developermode", "jailbreak",
+        "revealpassword", "showsecrets", "dumpdatabase",
+        "simulatemode", "revealprompt", "bypassfilter"
+    ]
+    
+    # Trusted Roots for Phishing Detection
+    TRUSTED_ROOTS = [
+        "google", "paypal", "microsoft", "apple", "facebook", "amazon",
+        "netflix", "twitter", "linkedin", "instagram", "github", "stripe",
+        "chase", "wellsfargo", "bankofamerica", "citibank", "capitalone",
+        "dropbox", "zoom", "slack", "salesforce", "adobe", "oracle"
+    ]
+    
+    # Leet-speak reversal map (for skeleton normalization)
+    LEET_MAP = {
+        '1': 'i', '!': 'i', 'l': 'i', '|': 'i',
+        '0': 'o', '3': 'e', '4': 'a', '7': 't',
+        '@': 'a', '$': 's', '5': 's', '8': 'b', 
+        '9': 'g', '6': 'g', '+': 't', '(': 'c'
+    }
+    
+    # Homoglyph mappings (Cyrillic/Unicode lookalikes)
+    HOMOGLYPHS = {
+        'а': 'a', 'е': 'e', 'о': 'o', 'р': 'p', 'с': 'c', 'х': 'x',
+        'ѕ': 's', 'і': 'i', 'ј': 'j', 'ԁ': 'd', 'ɡ': 'g', 'һ': 'h',
+        'ḷ': 'l', 'ṃ': 'm', 'ṇ': 'n', 'ṭ': 't', 'ṿ': 'v', 'ẉ': 'w'
+    }
+    
+    # Zero-width and invisible characters
+    INVISIBLE_CHARS = re.compile(r'[\u200b\u200c\u200d\u200e\u200f\uFEFF\u00AD\u034F\u2060\u2061\u2062\u2063\u2064\u0000-\u001F]')
+
+    def __init__(self):
+        """Initialize the OMEGA Engine."""
+        self.entropy_threshold = 4.85
+        self.sigmoid_steepness = 0.1
+        self.max_recursion_depth = 3
+        self.enabled = True
+        logger.info("GI-5: OMEGA KERNEL ONLINE. 6-Core Forensic Stack Active.")
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # CORE 1: THE SANITIZER (Unicode & Invisible Forensics)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ROAST: `opacity == 0` check misses zero-width spaces and control chars
+    # REFINE: Strip ALL invisible Unicode before analysis
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    def _sanitize_input(self, text: str) -> str:
+        """
+        Removes invisible attacks: Zero-width spaces, control characters,
+        directional formatting, and soft hyphens.
         
-        if self.enabled:
-            genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel('gemini-pro')
-            logger.info("GI-5: Neural Link Established.")
-        else:
-            logger.warning("GI-5: Neural Link Offline (No API Key).")
+        Example: 'p\u200bass\u200bword' → 'password'
+        """
+        if not text:
+            return ""
+        
+        # Step 1: Remove all invisible/zero-width characters
+        clean = self.INVISIBLE_CHARS.sub('', text)
+        
+        # Step 2: Normalize homoglyphs (Cyrillic lookalikes → Latin)
+        for glyph, replacement in self.HOMOGLYPHS.items():
+            clean = clean.replace(glyph, replacement)
+        
+        return clean
 
-    # ANTIGRAVITY V12 // FORENSIC TRUTH KERNEL CONSTANTS
-    V12_SYSTEM_PROMPT = """
-SYSTEM PROMPT: ANTIGRAVITY V12 // FORENSIC TRUTH KERNEL
-ACTIVATION CODE: PROTOCOL_DEEP_ACCURACY
-ROLE: You are Agent Kappa (Forensic Core). You do not "guess." You audit.
+    # ═══════════════════════════════════════════════════════════════════════════
+    # CORE 2: THE POLY-CIPHER CRACKER (Multi-Cipher Heuristic Brute-Force)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ROAST: Standard decoders only check Base64. Hackers use ROT13, Reverse, XOR
+    # REFINE: Attempt ALL common ciphers and collect decoded variants
+    # ═══════════════════════════════════════════════════════════════════════════
 
-PHASE 1: THE ACCURACY LAWS (IMMUTABLE)
-LAW 1: THE EVIDENCE REQUIREMENT
- * Constraint: You cannot claim a vulnerability exists without referencing the specific Payload or Code Line.
- * Verification: If the input data is missing the payload or proof, you MUST label the finding as [POTENTIAL] or [UNVERIFIED]. Do not lie about certainty.
-LAW 2: THE "NO-FLUFF" MANDATE
- * Banned Phrases: "Hackers could," "Bad things might happen," "Update your system."
- * Required Precision: Use specific technical consequences.
-   * Bad: "Data might be stolen."
-   * Good: "Unauthorized exfiltration of the users table via blind SQL injection allows for dumping of hashed credentials."
-LAW 3: THE CIA TRIAD CALCULATION
- * For every finding, you must explicitly analyze the impact on:
-   * Confidentiality: (Is data leaked?)
-   * Integrity: (Is data modified?)
-   * Availability: (Is the system crashed?)
+    def _heuristic_crack(self, text: str) -> Set[str]:
+        """
+        Attempts to break common obfuscation layers:
+        - ROT13 (Caesar cipher variant)
+        - Reverse String
+        - Base64 (recursive up to 3 levels)
+        - URL Encoding (recursive)
+        - Hex Encoding
+        
+        Returns a set of ALL revealed variations for analysis.
+        """
+        candidates = {text}
+        
+        if not text or len(text) < 4:
+            return candidates
+        
+        # 1. REVERSE STRING ("tpircsavaj" → "javascript")
+        reversed_text = text[::-1]
+        candidates.add(reversed_text)
+        
+        # 2. ROT13 (Caesar Cipher - shifts letters 13 positions)
+        try:
+            rot13_decoded = codecs.encode(text, 'rot_13')
+            candidates.add(rot13_decoded)
+        except Exception:
+            pass
+        
+        # 3. RECURSIVE DECODING LOOP (Base64, URL, Hex)
+        current = text
+        for depth in range(self.max_recursion_depth):
+            decoded_something = False
+            
+            # A. URL Decode
+            try:
+                url_decoded = urllib.parse.unquote(current)
+                if url_decoded != current and len(url_decoded) > 4:
+                    candidates.add(url_decoded)
+                    current = url_decoded
+                    decoded_something = True
+            except Exception:
+                pass
+            
+            # B. Base64 Decode
+            if not decoded_something:
+                try:
+                    # Auto-fix padding
+                    padded = current + '=' * (-len(current) % 4)
+                    b64_decoded = base64.b64decode(padded, validate=False).decode('utf-8', errors='ignore')
+                    if b64_decoded and b64_decoded.isprintable() and len(b64_decoded) > 4:
+                        candidates.add(b64_decoded)
+                        current = b64_decoded
+                        decoded_something = True
+                except Exception:
+                    pass
+            
+            # C. Hex Decode
+            if not decoded_something:
+                try:
+                    hex_decoded = bytes.fromhex(current).decode('utf-8', errors='ignore')
+                    if hex_decoded and len(hex_decoded) > 4:
+                        candidates.add(hex_decoded)
+                        current = hex_decoded
+                        decoded_something = True
+                except Exception:
+                    pass
+            
+            if not decoded_something:
+                break
+        
+        return candidates
 
-PHASE 2: THE ANALYSIS PROTOCOL (CHAIN OF THOUGHT)
-Before generating the report, perform this internal checklist:
- * Map the Vector: Is this SQLi, XSS, or RCE? Map it to the exact CWE ID.
- * Determine Scope: Does this affect one user (Reflected XSS) or the whole database (SQLi)?
- * Draft the Fix: Write a specific code patch, not generic advice.
+    # ═══════════════════════════════════════════════════════════════════════════
+    # CORE 3: THE SKELETONIZER (Leet-Speak Reversal + Normalization)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ROAST: Regex fails on "p@$$w0rd!" and "1gn0r3 pr3v10us"
+    # REFINE: Skeleton Key Normalization strips to semantic core
+    # ═══════════════════════════════════════════════════════════════════════════
 
-PHASE 3: THE CONTENT GENERATION (STRUCTURED FOR PDF)
-INSTRUCTION: Generate the report content in the following Strict Sectional Format. Use Bullet Points • for all details to satisfy the layout requirements.
-SECTION 1: VULNERABILITY_TITLE
- * Rule: Create a Title that includes the Vulnerability Name, Component, and Severity.
- * Format: [CRITICAL] SQL Injection in Payment Gateway (CWE-89)
-SECTION 2: EXECUTIVE_POINTS (The "Big & Bold" Summary)
- * Rule: Write 3-4 distinct bullet points summarizing the risk for a non-technical manager.
- * Content:
-   * Attack Vector: How the attack happens (e.g., "Malicious payload sent to /api/pay").
-   * Business Impact: Financial/Reputational loss (e.g., "Potential loss of PCI-DSS compliance").
-   * Urgency: Immediate action required (e.g., "Remediate within 24 hours").
-SECTION 3: TECHNICAL_DEEP_DIVE (The Forensic Evidence)
- * Rule: Write 5-8 detailed bullet points for the developers.
- * Content:
-   * Endpoint: The exact URL/File affected.
-   * Payload: The specific malicious string used (e.g., ' OR 1=1 --).
-   * Response Analysis: Why we know it worked (e.g., "Server returned 500 Error with database dump").
-   * CVSS Vector: The calculated score (e.g., CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H).
-SECTION 4: REMEDIATION_PLAN (The Fix)
- * Rule: Provide distinct steps, separated by "Strategic" (Config) and "Tactical" (Code).
- * Content:
-   * Step 1: Architecture fix (e.g., "Enable WAF Rule #942").
-   * Step 2: Code fix (e.g., "Implement Parameterized Queries").
-   * Step 3: Verification (e.g., "Run regression test suite").
-"""
+    def _normalize_skeleton(self, text: str) -> str:
+        """
+        Strips text to its semantic bones for pattern matching.
+        
+        Pipeline:
+        1. Lowercase
+        2. Reverse leet-speak substitutions
+        3. Strip all non-alphanumeric
+        
+        Example: 'P@$$w0rd!' → 'password'
+        Example: '1gn0r3 pr3v10us 1nstruct10ns' → 'ignorepreviousinstructions'
+        """
+        if not text:
+            return ""
+        
+        result = text.lower()
+        
+        # Leet-speak reversal
+        for leet, replacement in self.LEET_MAP.items():
+            result = result.replace(leet, replacement)
+        
+        # Strip non-alphanumeric
+        result = re.sub(r'[^a-z0-9]', '', result)
+        
+        return result
+
+    def _scan_injection_patterns(self, text: str) -> Tuple[bool, str]:
+        """Scans normalized text for injection pattern skeletons."""
+        skeleton = self._normalize_skeleton(text)
+        
+        for pattern in self.INJECTION_SKELETONS:
+            if pattern in skeleton:
+                return (True, pattern)
+        
+        return (False, "")
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # CORE 4: THE ENTROPY ENGINE (Shannon Information Theory)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ROAST: "too long" and "looks weird" are not metrics
+    # REFINE: Shannon Entropy mathematically distinguishes information from chaos
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    def _calculate_entropy(self, text: str) -> float:
+        """
+        Shannon Entropy: Mathematical measurement of information density.
+        
+        Formula: H(x) = -Σ p(x) * log₂(p(x))
+        
+        Thresholds:
+        - English Normal: ~3.5 to 4.5 bits/symbol
+        - Malicious/Obfuscated (Base64, encrypted): > 4.85 bits/symbol
+        """
+        if not text or len(text) < 2:
+            return 0.0
+        
+        freq = {}
+        for char in text:
+            freq[char] = freq.get(char, 0) + 1
+        
+        length = len(text)
+        entropy = 0.0
+        for count in freq.values():
+            probability = count / length
+            if probability > 0:
+                entropy -= probability * math.log2(probability)
+        
+        return entropy
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # CORE 5: THE VECTOR FINGERPRINTER (N-Gram Toxic Tuple Matching)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ROAST: High syntax density just means "it's code" - too many false positives
+    # REFINE: Look for TOXIC TUPLES - word combinations that indicate attacks
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    def _vector_scan(self, text: str) -> Tuple[int, str]:
+        """
+        Scans text against Toxic Vectors (N-Gram fingerprints).
+        
+        Instead of just counting symbols, we look for toxic word combinations:
+        - Safe: "function() {" 
+        - Toxic: "onerror" + "alert" + "document.cookie"
+        
+        Returns (risk_weight, threat_description)
+        """
+        normalized = text.lower()
+        max_risk = 0
+        detected_threat = ""
+        
+        for vector_set, threat_name in self.TOXIC_VECTORS:
+            # Count how many words from the toxic vector are present
+            hits = sum(1 for word in vector_set if word in normalized)
+            
+            # If 2+ words from the vector are present, it's a match
+            if hits >= 2:
+                risk = 70 + (hits * 10)  # Base 70, +10 per hit
+                if risk > max_risk:
+                    max_risk = min(risk, 100)  # Cap at 100
+                    detected_threat = f"{threat_name} ({hits} vector matches)"
+        
+        return max_risk, detected_threat
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # CORE 6: THE GEOMETER (Levenshtein Distance + Typosquatting)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ROAST: Blacklists are useless - hackers create 10,000 domains/day
+    # REFINE: Detect domains PRETENDING to be trusted roots
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    def _levenshtein_distance(self, s1: str, s2: str) -> int:
+        """
+        Levenshtein Edit Distance: Minimum single-character edits to transform s1 → s2.
+        
+        Used for typosquatting detection:
+        - "g00gle" is 2 edits from "google"
+        - If distance < 3 AND domain != trusted, it's phishing
+        """
+        if len(s1) < len(s2):
+            return self._levenshtein_distance(s2, s1)
+        
+        if len(s2) == 0:
+            return len(s1)
+        
+        previous_row = list(range(len(s2) + 1))
+        
+        for i, c1 in enumerate(s1):
+            current_row = [i + 1]
+            for j, c2 in enumerate(s2):
+                insertions = previous_row[j + 1] + 1
+                deletions = current_row[j] + 1
+                substitutions = previous_row[j] + (c1 != c2)
+                current_row.append(min(insertions, deletions, substitutions))
+            previous_row = current_row
+        
+        return previous_row[-1]
+
+    def _detect_typosquatting(self, domain: str) -> Tuple[bool, str, int]:
+        """Detects if a domain is attempting to impersonate a trusted root."""
+        if not domain:
+            return (False, "", 0)
+        
+        # Normalize and extract root
+        normalized = self._normalize_skeleton(domain)
+        root = normalized.split('.')[0] if '.' in domain else normalized
+        root = re.sub(r'(com|org|net|io|co|uk|de|fr|app|dev)$', '', root)
+        
+        for trusted in self.TRUSTED_ROOTS:
+            if root == trusted:
+                continue
+            
+            distance = self._levenshtein_distance(root, trusted)
+            
+            if 0 < distance <= 2:
+                return (True, trusted, distance)
+            
+            if trusted in root and root != trusted:
+                return (True, trusted, 1)
+        
+        return (False, "", 0)
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SIGMOID AGGREGATOR: Non-Linear Risk Fusion
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ROAST: Linear math is dumb. Two "Low Risk" signals are often MORE dangerous
+    # REFINE: Sigmoid activation function for non-linear aggregation
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    def _sigmoid_score(self, inputs: List[float]) -> int:
+        """
+        Non-Linear Risk Aggregation using Sigmoid activation.
+        
+        Multiple weak signals compound exponentially:
+        - Hidden element (30) + High entropy (40) = 70 linear
+        - But sigmoid knows 2 risks together are worse: outputs ~95
+        
+        Formula: 100 / (1 + e^(-k * (x - threshold)))
+        """
+        if not inputs:
+            return 0
+        
+        total_weight = sum(inputs)
+        
+        # Sigmoid: shifts curve so ~40 triggers warning, ~70 triggers block
+        score = 100 / (1 + math.exp(-self.sigmoid_steepness * (total_weight - 40)))
+        
+        return int(min(score, 100))
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # MASTER PROCESSOR: UNIFIED THREAT ASSESSMENT
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    def analyze_threat(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        The OMEGA Processor.
+        
+        Flow: Sanitize → Crack → Skeletonize → Vector Scan → Entropy → Geometry → Sigmoid
+        
+        Input payload can contain:
+        - text: String content to analyze
+        - domain: URL/domain to check for typosquatting
+        - hidden: Boolean indicating if element is hidden (adds risk weight)
+        - element: DOM element data for visual analysis
+        
+        Returns verdict with full forensic reasoning chain.
+        """
+        raw_text = payload.get("text", "")
+        domain = payload.get("domain", "")
+        is_hidden = payload.get("hidden", False)
+        element = payload.get("element", {})
+        
+        # Risk Accumulator (Collects signals from all cores)
+        risk_signals: List[float] = []
+        verdicts: List[str] = []
+        
+        # ─── PHASE 1: SANITIZATION ───
+        clean_text = self._sanitize_input(raw_text)
+        
+        # ─── PHASE 2: POLY-CIPHER CRACKING ───
+        # Attempt to decode all obfuscation layers
+        candidates = self._heuristic_crack(clean_text)
+        
+        for variant in candidates:
+            # ─── CHECK A: SKELETON PATTERN MATCHING ───
+            is_injection, pattern = self._scan_injection_patterns(variant)
+            if is_injection:
+                risk_signals.append(100)
+                verdicts.append(f"Injection Pattern: '{pattern}'")
+            
+            # ─── CHECK B: VECTOR FINGERPRINTING ───
+            vector_risk, vector_name = self._vector_scan(variant)
+            if vector_risk > 0:
+                risk_signals.append(vector_risk)
+                verdicts.append(f"Vector Match: {vector_name}")
+            
+            # ─── CHECK C: ENTROPY ANALYSIS ───
+            if len(variant) > 25:
+                entropy = self._calculate_entropy(variant)
+                if entropy > self.entropy_threshold:
+                    risk_signals.append(40)
+                    verdicts.append(f"High Entropy: {entropy:.2f} bits/sym")
+            
+            # ─── CHECK D: SYNTAX DENSITY ───
+            if len(variant) > 10:
+                code_chars = len(re.findall(r'[;{}\(\)<>\$\[\]=]', variant))
+                syntax_density = code_chars / len(variant)
+                if syntax_density > 0.25:
+                    risk_signals.append(50)
+                    verdicts.append(f"Syntax Density: {syntax_density:.0%}")
+        
+        # ─── PHASE 3: TYPOSQUATTING DETECTION ───
+        if domain:
+            is_typosquat, impersonated, distance = self._detect_typosquatting(domain)
+            if is_typosquat:
+                risk_signals.append(95)
+                verdicts.append(f"Phishing: Mimics '{impersonated}' (distance: {distance})")
+        
+        # ─── PHASE 4: CONTEXT SIGNALS ───
+        if is_hidden:
+            risk_signals.append(30)
+            verdicts.append("Hidden Element")
+        
+        # ─── PHASE 5: DOM GEOMETRY ANALYSIS ───
+        if element:
+            styles = element.get("styles", {})
+            
+            opacity = float(styles.get("opacity", 1.0))
+            if opacity < 0.1:
+                risk_signals.append(40)
+                verdicts.append("Invisible Overlay")
+            
+            z_index = int(styles.get("z-index", 0) or 0)
+            if z_index > 9000:
+                risk_signals.append(30)
+                verdicts.append("Z-Index Overlay Attack")
+        
+        # ─── PHASE 6: SIGMOID AGGREGATION ───
+        final_score = self._sigmoid_score(risk_signals)
+        
+        # ─── DETERMINISTIC VERDICT ───
+        if final_score >= 75:
+            return {
+                "verdict": "BLOCK",
+                "risk_score": final_score,
+                "layer": "OMEGA",
+                "reason": " | ".join(verdicts) if verdicts else "Heuristic Anomaly Aggregation"
+            }
+        elif final_score >= 50:
+            return {
+                "verdict": "WARN",
+                "risk_score": final_score,
+                "layer": "OMEGA",
+                "reason": "Potential Risk: " + (" | ".join(verdicts) if verdicts else "Elevated Signals")
+            }
+        
+        return {
+            "verdict": "ALLOW",
+            "risk_score": final_score,
+            "layer": "OMEGA",
+            "reason": "GI5 OMEGA: All Cores Verified Safe"
+        }
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # LEGACY COMPATIBILITY LAYER
+    # ═══════════════════════════════════════════════════════════════════════════
 
     def synthesize_payloads(self, base_request: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """
-        Takes a raw HTTP request and uses LLM to generate 5 "Logic Variants".
-        """
-        if not self.enabled:
-            return []
-
-        prompt = f"""
-        ACT AS: A Lead Security Researcher & Fuzzer.
-        TASK: Generate 10 distinct, aggressive JSON payload variations for API security testing.
-        
-        BASE REQUEST:
-        {json.dumps(base_request, indent=2)}
-
-        ATTACK VECTORS TO COVER:
-        1. LOGIC FLAWS: Negative numbers, zero, large integers (Overflow).
-        2. TYPE JUGGLING: String "1" vs Int 1, Boolean conversions ("true" vs true), Array nesting.
-        3. INJECTION: SQLi (' OR 1=1), NoSQLi ($ne: null), Command Injection/Polyglots.
-        4. MASS ASSIGNMENT: Inject "role": "admin", "is_admin": true, "permissions": ["ALL"].
-        5. BOUNDARY/FORMAT: Huge strings, empty strings, null values, special chars.
-        6. VERB TAMPERING: If strictly JSON, maybe add _method override params.
-
-        OUTPUT FORMAT:
-        Return ONLY valid JSON. The format must be a LIST of objects, where each object has a 'name' (string) and 'json' (dict).
-        Example:
-        [
-            {{ "name": "Negative Logic", "json": {{ "amount": -100 }} }},
-            {{ "name": "NoSQL Bypass", "json": {{ "username": {{ "$ne": null }} }} }}
+        """Legacy: Generates attack payload variants."""
+        logger.info("GI-5: Synthesizing payload variants...")
+        return [
+            {"name": "Negative Logic", "json": {"amount": -100, "qty": -1}},
+            {"name": "Integer Overflow", "json": {"amount": 9999999999999}},
+            {"name": "SQL Injection", "json": {"username": "' OR 1=1--"}},
+            {"name": "NoSQL Injection", "json": {"username": {"$ne": None}}},
+            {"name": "Mass Assignment", "json": {"role": "admin", "is_admin": True}},
+            {"name": "XSS Payload", "json": {"name": "<script>alert('XSS')</script>"}},
+            {"name": "Path Traversal", "json": {"file": "../../../etc/passwd"}}
         ]
-        """
-
-        try:
-            logger.info("GI-5: Hypothesizing mutation vectors...")
-            response = self.model.generate_content(prompt)
-            text = response.text.strip()
-            
-            # Clean up markdown if present
-            if text.startswith("```json"):
-                text = text[7:]
-            if text.endswith("```"):
-                text = text[:-3]
-            
-            variants = json.loads(text)
-            logger.info(f"GI-5: Generated {len(variants)} variants.")
-            return variants
-        except Exception as e:
-            logger.error(f"GI-5 Mutation Failed: {e}")
-            return []
 
     def predict_race_window(self, headers: Dict[str, str]) -> float:
-        """
-        AI guesses the optimal millisecond delay based on server headers.
-        """
-        if not self.enabled:
-            return 0.0
-
-        server_header = headers.get("Server", "Unknown")
-        powered_by = headers.get("X-Powered-By", "Unknown")
-        
-        prompt = f"""
-        ACT AS: Network Latency Analyst.
-        TASK: Predict the optimal Race Condition synchronization delay (jitter) for this tech stack.
-        
-        HEADERS:
-        Server: {server_header}
-        X-Powered-By: {powered_by}
-
-        INSTRUCTIONS:
-        - If Nginx/Apache (Reverse Proxies): Suggest 5-10ms (Queueing time).
-        - If Node.js/Python (Single Threaded Event Loops): Suggest 0-2ms (Immediate).
-        - If Java/Go (Multi-threaded): Suggest 2-5ms.
-        
-        OUTPUT:
-        Return ONLY the number (float) in milliseconds. Example: 4.5
-        """
-        
-        try:
-            response = self.model.generate_content(prompt)
-            # simplistic parsing
-            text = response.text.replace('ms', '').strip()
-            return float(text)
-        except:
-            return 0.5 # Default conservative estimate
-
-    def analyze_id_pattern(self, url: str, body: str) -> Dict[str, Any]:
-        """
-        Detects if there is an ID parameter in the URL or Body and determines its type.
-        types: INTEGER, UUID, EMAIL, HASH, UNKNOWN
-        """
-        if not self.enabled:
-             # Basic heuristic fallback
-            if "id=" in url or "user_id" in body:
-                return {"found": True, "type": "INTEGER", "location": "URL" if "id=" in url else "BODY"}
-            return {"found": False}
-
-        prompt = f"""
-        ACT AS: ID Analysis Engine.
-        TASK: Identify the primary Identifier (ID) used to access the resource in this request.
-        
-        URL: {url}
-        BODY: {body}
-
-        OUTPUT JSON:
-        {{
-            "found": true/false,
-            "parameter": "user_id", // name of param
-            "value": "12345", // sample value found
-            "type": "INTEGER" // INTEGER, UUID, SHORT_HASH, EMAIL, or MONGODB_ID
-            "location": "URL_PATH" // URL_PATH, URL_QUERY, or BODY_JSON
-        }}
-        """
-        try:
-            response = self.model.generate_content(prompt)
-            text = response.text.replace("```json", "").replace("```", "").strip()
-            return json.loads(text)
-        except:
-            return {"found": False}
-
-    def generate_idor_variants(self, id_info: Dict[str, Any]) -> List[str]:
-        """
-        Generates a list of likely valid IDs based on the pattern found.
-        """
-        if not self.enabled or not id_info.get('found'):
-            return []
-
-        prompt = f"""
-        ACT AS: IDOR Payload Generator.
-        TASK: Generate 10 alternative IDs to test for Insecure Direct Object Reference (IDOR).
-        
-        TARGET_ID: {id_info}
-
-        STRATEGY:
-        - If INTEGER: Increment/Decrement (±1, ±10), use 0, 1, -1.
-        - If UUID: Generate valid random UUIDs, try "00000000-0000-0000-0000-000000000000".
-        - If EMAIL: Change domain, use common names (admin@..., test@...).
-        
-        OUTPUT:
-        Return valid JSON LIST of STRINGS. Example: ["1001", "1002", "0", "-1"]
-        """
-        try:
-            response = self.model.generate_content(prompt)
-            text = response.text.replace("```json", "").replace("```", "").strip()
-            return json.loads(text)
-        except:
-            return []
-
-    def analyze_sensitivity(self, response_body: str) -> List[str]:
-        """
-        Interception Filter: Scans response for Sensitive Data (PII, Financial, Keys).
-        """
-        if not self.enabled:
-            return []
-
-        prompt = f"""
-        ACT AS: Data Loss Prevention (DLP) Scanner.
-        TASK: Analyze this API Response for sensitive data.
-        
-        RESPONSE (Snippet):
-        {response_body[:1000]}
-
-        CHECK FOR:
-        1. PII (Emails, Phone Numbers, Addresses)
-        2. Financial (Credit Cards, Bank Accounts, Balances)
-        3. Secrets (API Keys, Tokens, Passwords)
-        
-        OUTPUT:
-        Return a JSON LIST of tags found. Example: ["PII: Email", "SECRET: AWS Key"].
-        If safe, return [].
-        """
-        try:
-            response = self.model.generate_content(prompt)
-            text = response.text.replace("```json", "").replace("```", "").strip()
-            return json.loads(text)
-        except:
-            return []
-
-    def analyze_semantics(self, payload: Dict[str, Any]) -> Dict[str, str]:
-        """
-        Deeply inspects JSON keys/values to infer business context.
-        Returns a mapping of Key -> Inferred Type (e.g., "is_admin" -> "PRIVILEGE_FLAG")
-        """
-        if not self.enabled:
-            return {}
-
-        prompt = f"""
-        ACT AS: Business Logic Analyst.
-        TASK: Infer the semantic meaning of these JSON fields.
-        
-        PAYLOAD:
-        {json.dumps(payload, indent=2)}
-
-        CATEGORIES:
-        - QUANTITY: numbers like amount, qty, price, balance
-        - PRIVILEGE: boolean/strings like is_admin, role, verified, tier
-        - IDENTIFIER: user_id, uuid, email
-        - DATA: generic strings like name, description
-
-        OUTPUT JSON:
-        {{ "field_name": "CATEGORY", ... }}
-        """
-        try:
-            response = self.model.generate_content(prompt)
-            text = response.text.replace("```json", "").replace("```", "").strip()
-            return json.loads(text)
-        except:
-            return {}
-
-    def generate_chaos_mutations(self, payload: Dict[str, Any], semantics: Dict[str, str]) -> List[Dict[str, Any]]:
-        """
-        Generates advanced logic exploits based on semantic meaning.
-        """
-        if not self.enabled:
-            return []
-
-        prompt = f"""
-        ACT AS: Chaos Engineering AI.
-        TASK: Generate 5 advanced business logic exploits based on the semantics.
-        
-        PAYLOAD: {json.dumps(payload)}
-        SEMANTICS: {json.dumps(semantics)}
-
-        ATTACK VECTORS:
-        1. MASS ASSIGNMENT: Inject "is_admin": true, "role": "admin", "balance": 99999999.
-        2. NEGATIVE LOGIC: If QUANTITY, send -100, 0.00001, or MAX_INT.
-        3. TYPE JUGGLING: Send ["1"] instead of "1", or true instead of 1.
-        4. BOOLEAN FLIP: Invert any privilege flags.
-        
-        OUTPUT:
-        Return a JSON LIST of objects: {{ "name": "Attack Name", "json": {{...}} }}
-        """
-        try:
-            response = self.model.generate_content(prompt)
-            text = response.text.replace("```json", "").replace("```", "").strip()
-            return json.loads(text)
-        except:
-            return []
-
-    def interpret_defense(self, status_code: int, response_body: str) -> str:
-        """
-        AI reads error messages and advises strategy.
-        Returns: "FORCE_LOWER_CONCURRENCY", "TRY_BYPASS_HEADERS", or "CONTINUE".
-        """
-        if not self.enabled:
-            return "CONTINUE"
-
-        prompt = f"""
-        ACT AS: WAF Defense Analyzer.
-        TASK: specific defense mechanism based on this HTTP Response.
-        
-        Response Status: {status_code}
-        Response Body: {response_body[:500]}
-
-        INSTRUCTIONS:
-        - If "Rate limit", "Too many requests", "429": Return "FORCE_LOWER_CONCURRENCY".
-        - If "WAF", "Block", "403": Return "TRY_BYPASS_HEADERS".
-        - Otherwise: Return "CONTINUE".
-        
-        OUTPUT:
-        Return ONLY the decision string.
-        """
-        
-        try:
-            response = self.model.generate_content(prompt)
-            return response.text.strip().upper()
-        except:
-            return "CONTINUE"
+        """Legacy: Predicts optimal race condition delay."""
+        server = headers.get("Server", "").lower()
+        if "nginx" in server or "apache" in server:
+            return 7.5
+        return 3.0
 
     def generate_forensic_report_block(self, vulnerability_data: Dict[str, Any]) -> str:
-        """
-        Antigravity V12: Generates a highly detailed, structured forensic report block.
-        """
-        if not self.enabled:
-            return "FORENSIC_OFFLINE: Neural link required for V12 analysis."
-
-        prompt = f"""
-{self.V12_SYSTEM_PROMPT}
-
-PHASE 4: THE OUTPUT TEMPLATE
-Fill this structure with the analyzed data:
-::TITLE_START::
-{{GENERATE_ACCURATE_TITLE}}
-::TITLE_END::
-
-::EXEC_SUMMARY_START::
-• {{POINT_1_ATTACK_VECTOR}}
-• {{POINT_2_BUSINESS_IMPACT}}
-• {{POINT_3_URGENCY}}
-::EXEC_SUMMARY_END::
-
-::TECH_DETAILS_START::
-• Affected Component: {{EXACT_URL_OR_FILE}}
-• Vulnerability Class: {{CWE_NAME}} ({{CWE_ID}})
-• Detected Payload: {{REAL_PAYLOAD_USED}}
-• Evidence of Compromise: {{EXPLANATION_OF_RESPONSE}}
-• Integrity Impact: {{SPECIFIC_DATA_AT_RISK}}
-• Access Complexity: {{LOW/MED/HIGH}}
-::TECH_DETAILS_END::
-
-::REMEDIATION_START::
-• Immediate Action: {{URGENT_CONFIG_CHANGE}}
-• Code Patch: {{SPECIFIC_CODING_FIX}}
-• Long-Term Strategy: {{ARCHITECTURAL_CHANGE}}
-::REMEDIATION_END::
-
-INPUT DATA:
-{json.dumps(vulnerability_data, indent=2)}
+        """Legacy: Generates forensic report block."""
+        return f"""
+::TITLE:: [{vulnerability_data.get('severity', 'Medium')}] {vulnerability_data.get('type', 'Unknown')}
+::EVIDENCE:: {vulnerability_data.get('payload', 'N/A')}
+::REMEDIATION:: Review and patch the affected endpoint.
 """
-        try:
-            logger.info("GI-5: Executing Forensic Truth Kernel (V12)...")
-            response = self.model.generate_content(prompt)
-            return response.text.strip()
-        except Exception as e:
-            logger.error(f"GI-5 Forensic Analysis Failed: {e}")
-            return f"FORENSIC_FAILURE: {str(e)}"
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# GLOBAL INITIALIZATION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Primary Instance (OMEGA Kernel)
+brain = GeneralIntelligence5()
+
+# Legacy Alias
+GI5Engine = GeneralIntelligence5

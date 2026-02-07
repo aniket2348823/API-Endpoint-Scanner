@@ -1,0 +1,56 @@
+D:\Antigravity 2\API Endpoint Scanner\backend\ai\gi5.py:1: FutureWarning: 
+
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+2026-02-08 01:38:27,525 | INFO | --- [START] SWARM CONNECTIVITY TEST ---
+INFO:SwarmTest:--- [START] SWARM CONNECTIVITY TEST ---
+WARNING:GI-5:GI-5: Neural Link Offline (No API Key).
+WARNING:GI-5:GI-5: Neural Link Offline (No API Key).
+WARNING:GI-5:GI-5: Neural Link Offline (No API Key).
+INFO:root:\U0001f916 agent_alpha is ONLINE.
+INFO:root:\U0001f916 agent_beta is ONLINE.
+INFO:root:\U0001f916 agent_sigma is ONLINE.
+INFO:root:\U0001f916 agent_kappa is ONLINE.
+2026-02-08 01:38:27,558 | INFO | --- [AGENTS ONLINE] ---
+INFO:SwarmTest:--- [AGENTS ONLINE] ---
+2026-02-08 01:38:27,558 | INFO | --- [TRIGGER] SIMULATING JOB ASSIGNMENT -> ALPHA ---
+INFO:SwarmTest:--- [TRIGGER] SIMULATING JOB ASSIGNMENT -> ALPHA ---
+D:\Antigravity 2\API Endpoint Scanner\backend\tests\test_swarm_comms.py:98: PydanticDeprecatedSince20: The `dict` method is deprecated; use `model_dump` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+  payload=test_packet.dict()
+2026-02-08 01:38:28,013 | INFO | [OK] BETA: Executed Attack Job.
+INFO:SwarmTest:[OK] BETA: Executed Attack Job.
+2026-02-08 01:38:29,602 | INFO | --- [TRIGGER] SIMULATING BETA REQUESTING PAYLOAD -> SIGMA ---
+INFO:SwarmTest:--- [TRIGGER] SIMULATING BETA REQUESTING PAYLOAD -> SIGMA ---
+D:\Antigravity 2\API Endpoint Scanner\backend\tests\test_swarm_comms.py:113: PydanticDeprecatedSince20: The `dict` method is deprecated; use `model_dump` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+  payload=sigma_job.dict()
+2026-02-08 01:38:29,604 | INFO | [OK] SIGMA: Forged Payload.
+INFO:SwarmTest:[OK] SIGMA: Forged Payload.
+ERROR:root:[CRITICAL] Handler failed processing EventType.JOB_ASSIGNED: Cannot connect to host test-bank.local:80 ssl:default [Domain name not found]
+2026-02-08 01:38:33,609 | INFO | --- [TRIGGER] SIMULATING VULN FOUND -> KAPPA ---
+INFO:SwarmTest:--- [TRIGGER] SIMULATING VULN FOUND -> KAPPA ---
+2026-02-08 01:38:33,688 | INFO | [OK] BETA: Executed Attack Job.
+INFO:SwarmTest:[OK] BETA: Executed Attack Job.
+2026-02-08 01:38:33,702 | INFO | [OK] KAPPA: Archived Finding.
+INFO:SwarmTest:[OK] KAPPA: Archived Finding.
+2026-02-08 01:38:38,612 | INFO | --- [RESULTS] ---
+INFO:SwarmTest:--- [RESULTS] ---
+2026-02-08 01:38:38,612 | INFO | Connectivity Score: 3/3 (Alpha is silent type in this test)
+INFO:SwarmTest:Connectivity Score: 3/3 (Alpha is silent type in this test)
+2026-02-08 01:38:38,612 | INFO | {'ALPHA_TARGET_SEEN': False, 'BETA_JOB_RECEIVED': True, 'SIGMA_FORGE_RECEIVED': True, 'KAPPA_ARCHIVE_RECEIVED': True}
+INFO:SwarmTest:{'ALPHA_TARGET_SEEN': False, 'BETA_JOB_RECEIVED': True, 'SIGMA_FORGE_RECEIVED': True, 'KAPPA_ARCHIVE_RECEIVED': True}
+2026-02-08 01:38:38,613 | INFO | [SUCCESS] SWARM CONNECTION VERIFIED: OPTIMAL
+INFO:SwarmTest:[SUCCESS] SWARM CONNECTION VERIFIED: OPTIMAL
+[agent_alpha] Received Job 91fbe0ad-ddb6-4c85-bbb4-36c3cf652d04 (logic_skipper)
+[agent_alpha]: API DETECTED. Dispatching Handover.
+[agent_beta] Intercepted API Candidate: http://test-bank.local/api/transfer. Launching Polyglot Assault.
+[agent_beta] >> AI Mutation Strategy: '/**/%09OR/**/%091=1/**/%09UNION/**/%09SELECT/**/%091,2,3--
+[agent_beta] Executing tech_fuzzer on http://test-bank.local/api/transfer
+[agent_kappa] [AUDIT] Auditing Candidate: Unknown
+[agent_sigma] Forging payloads for http://test-bank.local/login...
+[agent_sigma] Forged 12 SOTA payloads.
+[agent_kappa] [ARCHIVE] Vulnerability found by agent_beta

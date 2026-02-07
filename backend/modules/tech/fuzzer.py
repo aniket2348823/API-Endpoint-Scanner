@@ -23,7 +23,7 @@ class APIFuzzer(BaseArsenalModule):
              async with aiohttp.ClientSession() as session:
                 for vector in fuzz_vectors:
                     # Append to URL path for simplicity
-                    fuzzed_url = f"{packet.target_url}/{vector}"
+                    fuzzed_url = f"{packet.target.url}/{vector}"
                     try:
                          async with session.get(fuzzed_url) as response:
                             if response.status == 500:

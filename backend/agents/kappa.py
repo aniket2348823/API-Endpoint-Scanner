@@ -16,7 +16,9 @@ class KappaAgent(BaseAgent):
     def __init__(self, bus):
         super().__init__("agent_kappa", bus)
         # GAP FIX: Correct Path inside project
-        self.memory_file = "d:/Antigravity 2/API Endpoint Scanner/brain/memory.json"
+        # GAP FIX: Correct Path inside project
+        base_dir = os.getcwd()
+        self.memory_file = os.path.join(base_dir, "brain", "memory.json")
         
         # Initialize Truth Kernel
         try:
@@ -45,7 +47,7 @@ class KappaAgent(BaseAgent):
         Antigravity V12: The Forensic Truth Kernel Audit
         """
         payload = event.payload
-        print(f"[{self.name}] 🕵️ Auditing Candidate: {payload.get('description', 'Unknown')}")
+        print(f"[{self.name}] [AUDIT] Auditing Candidate: {payload.get('description', 'Unknown')}")
         
         if self.truth_kernel and self.truth_kernel.enabled:
             # Generate Forensic Report Block
@@ -71,14 +73,14 @@ class KappaAgent(BaseAgent):
         # Determine if success
         status = payload.get("status")
         if status == "VULN_FOUND":
-            print(f"[{self.name}] 📜 Archiving Vulnerability found by {event.source}")
+            print(f"[{self.name}] [ARCHIVE] Vulnerability found by {event.source}")
             self._save_record(payload)
             
             # Emit Archive Log for Report
             await self.bus.publish(HiveEvent(
                 type=EventType.LOG,
                 source=self.name,
-                payload=f"Vector {payload.get('payload', {}).get('type', 'logic_overflow')} stored in Hive Memory."
+                payload={"message": f"Vector {payload.get('payload', {}).get('type', 'logic_overflow')} stored in Hive Memory."}
             ))
 
     def _save_record(self, record):

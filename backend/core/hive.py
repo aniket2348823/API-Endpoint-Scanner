@@ -64,7 +64,7 @@ class EventBus:
         try:
             await handler(event)
         except Exception as e:
-            logging.error(f"🔥 CRITICAL: Handler failed processing {event.type}: {e}")
+            logging.error(f"[CRITICAL] Handler failed processing {event.type}: {e}")
 
 # --- 3. THE DNA (Base Agent) ---
 
@@ -123,3 +123,20 @@ class BaseAgent:
         Override this with specific logic (LLM, Heuristic, etc).
         """
         pass
+
+    async def execute_task(self, packet):
+        """
+        Synchronous task execution for Defense API.
+        Subclasses (Theta, Iota) should override this.
+        """
+        from backend.core.protocol import ResultPacket, Vulnerability
+        
+        # Default implementation - subclasses should override
+        return ResultPacket(
+            job_id=packet.id if hasattr(packet, 'id') else "unknown",
+            source_agent=self.name,
+            status="SAFE",
+            vulnerabilities=[],
+            execution_time_ms=0,
+            data={}
+        )

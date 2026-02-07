@@ -22,7 +22,9 @@ async def fire_attack(payload: AttackPayload, background_tasks: BackgroundTasks)
         "method": payload.method,
         "headers": payload.headers,
         "payload": payload.body, # Original body for Tycoon/Escalator
-        "velocity": payload.velocity
+        "velocity": payload.velocity,
+        "modules": payload.modules,
+        "filters": payload.filters
     }
     
     # 2. Initial DB Registration (Orchestrator updates this too, but we reserve the slot)
@@ -36,7 +38,7 @@ async def fire_attack(payload: AttackPayload, background_tasks: BackgroundTasks)
         "status": "Initializing",
         "name": target_config['url'],
         "scope": target_config['url'],
-        "modules": ["Singularity V5"],
+        "modules": target_config['modules'] if target_config['modules'] else ["Singularity V5"],
         "timestamp": start_time.strftime("%Y-%m-%d %H:%M:%S"),
         "results": []
     }

@@ -24,3 +24,5 @@ class AttackPayload(BaseModel):
     headers: Dict[str, str]
     body: Optional[str] = ""
     velocity: int # Mapping to concurrency
+    modules: list[str] = []
+    filters: list[str] = []

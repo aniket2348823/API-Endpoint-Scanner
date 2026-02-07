@@ -109,6 +109,36 @@ export const agents = [
             "Pattern Matching",
             "Knowledge Graphing"
         ]
+    },
+    {
+        id: "THETA",
+        name: "Agent Prism",
+        role: "THE SENTINEL",
+        description: "Defensive Text Analyst. Sanitizes inputs for Prompt Injection and Jailbreaks.",
+        color: "text-emerald-500",
+        border: "border-emerald-500/50",
+        bg_gradient: "from-emerald-500/10 to-transparent",
+        capabilities: [
+            "Injection Shield",
+            "Invisible Text Scan",
+            "Jailbreak Detection",
+            "Content Sanitization"
+        ]
+    },
+    {
+        id: "IOTA",
+        name: "Agent Chi",
+        role: "THE INSPECTOR",
+        description: "Defensive UI Analyst. Detects Dark Patterns, Phishing, and Deceptive Buttons.",
+        color: "text-emerald-500",
+        border: "border-emerald-500/50",
+        bg_gradient: "from-emerald-500/10 to-transparent",
+        capabilities: [
+            "Dark Pattern Hunter",
+            "Phishing Radar",
+            "Deceptive UX Scan",
+            "Homoglyph Detection"
+        ]
     }
 ];
 

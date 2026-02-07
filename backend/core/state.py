@@ -13,7 +13,13 @@ class StateManager:
             "total_scans": 0,
             "vulnerabilities": 0,
             "critical": 0,
-            "history": [0] * 30  # Initialize with flatline for graph
+            "history": [0] * 30,  # Initialize with flatline for graph
+            # V6: New Metrics
+            "v6_metrics": {
+                "injections_blocked": 0,
+                "deceptive_ui_blocked": 0,
+                "risk_score": 0
+            }
         }
         self._load()
         
@@ -62,6 +68,23 @@ class StateManager:
         if len(self._stats["history"]) > 30:
             self._stats["history"].pop(0)
             
+        self._save()
+
+    def record_threat(self, threat_type: str, risk_score: int):
+        """V6: Record a detected threat for metrics."""
+        v6 = self._stats.get("v6_metrics", {})
+        
+        # Categorize by threat type
+        if threat_type.upper() in ["PROMPT_INJECTION", "HIDDEN_TEXT", "INVISIBLE_TEXT"]:
+            v6["injections_blocked"] = v6.get("injections_blocked", 0) + 1
+        elif threat_type.upper() in ["DARK_PATTERN_BLOCK", "DECEPTIVE_UI", "PHISHING"]:
+            v6["deceptive_ui_blocked"] = v6.get("deceptive_ui_blocked", 0) + 1
+        
+        # Update cumulative risk score (average of recent)
+        current_risk = v6.get("risk_score", 0)
+        v6["risk_score"] = max(current_risk, risk_score)  # Track peak risk
+        
+        self._stats["v6_metrics"] = v6
         self._save()
 
         

@@ -1,5 +1,6 @@
 // Antigravity Spy V2 - Background Service Worker
-// Modules: Synapse (Key Capture) + Traffic Interception
+// Modules: Synapse (Key Capture) + Traffic Interception + Aegis (Active Defense)
+importScripts('background/active_defense.js');
 
 // ============================================================================
 // CONFIGURATION
@@ -100,6 +101,33 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'SCAN_RESULTS') {
         console.log("[SPY V2] Received Scan Results from Tab:", sender.tab.id);
         sendScanResults(message.payload);
+    }
+
+    // 2. DEFENSE SHIELD (Agent Prism & Chi)
+    if (message.type === "ANALYZE_THREAT") {
+        console.log("[BACKGROUND] Relaying threat to Hive:", message.payload);
+
+        // 1. Send Data to Python Backend
+        fetch("http://127.0.0.1:8000/api/defense/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(message.payload)
+        })
+            .then(res => res.json())
+            .then(response => {
+                console.log("[BACKGROUND] Hive Verdict:", response);
+                if (response.verdict === "BLOCK") {
+                    // 2. If Backend says BLOCK, notify the user
+                    chrome.scripting.executeScript({
+                        target: { tabId: sender.tab.id },
+                        func: showBlockNotification,
+                        args: [response.reason]
+                    });
+                }
+            })
+            .catch(err => console.error("Hive Disconnected:", err));
+
+        return true;
     }
 });
 
@@ -206,5 +234,14 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
     { urls: ["<all_urls>"] },
     ["requestHeaders", "extraHeaders"]
 );
+
+function showBlockNotification(reason) {
+    // Inject a Toast Notification into the page
+    const toast = document.createElement("div");
+    toast.innerText = `🛡️ ANTIGRAVITY BLOCKED THREAT: ${reason}`;
+    toast.style = "position:fixed; top:20px; right:20px; background:#ef4444; color:white; padding:15px; z-index:999999; border-radius:5px; font-family:monospace; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-weight: bold; border: 1px solid #b91c1c;";
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
+}
 
 console.log("[SPY V2] Antigravity Spy V2 Initialized");

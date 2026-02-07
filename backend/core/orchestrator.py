@@ -2,13 +2,12 @@ import asyncio
 import logging
 from datetime import datetime
 from backend.core.hive import EventBus, EventType, HiveEvent
-from backend.core.hyper_hive import NeuroNegotiator 
+# NeuroNegotiator removed - dead code cleanup V6
 from backend.core.state import stats_db_manager
 from backend.core.config import settings
 from backend.api.socket_manager import manager
 
 # Import Agents
-# Import Agents (Antigravity V5)
 from backend.agents.alpha import AlphaAgent
 from backend.agents.beta import BetaAgent
 from backend.agents.gamma import GammaAgent
@@ -16,13 +15,20 @@ from backend.agents.omega import OmegaAgent
 from backend.agents.zeta import ZetaAgent
 from backend.agents.sigma import SigmaAgent
 from backend.agents.kappa import KappaAgent 
+# V6 AGENTS
+# V6 AGENTS
+from backend.agents.sentinel import AgentTheta # Agent Theta (The Sentinel)
+from backend.agents.inspector import AgentIota # Agent Iota (The Inspector)
 
-from backend.core.memory import recorder # The Hippocampus
+# recorder removed - unused import cleanup V6
 from backend.core.reporting import ReportGenerator # The Voice
 
 logger = logging.getLogger("HiveOrchestrator")
 
 class HiveOrchestrator:
+    # Global Registry for API Access (Nervous System)
+    active_agents = {}
+
     @staticmethod
     async def bootstrap_hive(target_config, scan_id=None):
         """
@@ -70,24 +76,17 @@ class HiveOrchestrator:
             # REAL-TIME DASHBOARD SYNC
             if event.type == EventType.VULN_CONFIRMED:
                 # Update global stats immediately
-                severity = event.payload.get('severity', 'Medium')
+                # payload might be nested or direct
+                real_payload = event.payload
+                # Check if payload is wrapped in 'payload' key
+                if 'payload' in real_payload and isinstance(real_payload['payload'], dict):
+                     # Flatten if needed, but usually real_payload is the dict we want
+                     pass
+
+                severity = real_payload.get('severity', 'High')
                 stats_db_manager.record_finding(severity)
                 
                 # Broadcast authoritative stats to UI
-                current_stats = stats_db_manager.get_stats()
-                await manager.broadcast({
-                    "type": "VULN_UPDATE",
-                    "payload": current_stats
-                })
-            
-            # REAL-TIME DASHBOARD SYNC
-            if event.type == EventType.VULN_CONFIRMED:
-                # 1. Update Persistent DB immediately
-                payload = event.payload.get('payload', {})
-                severity = payload.get('severity', 'High') if isinstance(payload, dict) else 'High'
-                stats_db_manager.record_finding(severity)
-                
-                # 2. Broadcast authoritative stats to UI
                 current_stats = stats_db_manager.get_stats()
                 await manager.broadcast({
                     "type": "VULN_UPDATE", 
@@ -95,12 +94,52 @@ class HiveOrchestrator:
                         "metrics": {
                             "vulnerabilities": current_stats["vulnerabilities"],
                             "critical": current_stats["critical"],
-                            "active_scans": current_stats["active_scans"], # Keep sync
+                            "active_scans": current_stats["active_scans"], 
                             "total_scans": current_stats["total_scans"]
                         },
                         "graph_data": current_stats["history"]
                     }
                 })
+
+                # V6: Persist Threat Metrics
+                threat_type = real_payload.get("type", "Unknown Threat")
+                risk_score = real_payload.get("data", {}).get("risk_score", 0)
+                stats_db_manager.record_threat(threat_type, risk_score)
+
+                # Broadcast LIVE THREAT LOG (New Feature)
+                await manager.broadcast({
+                    "type": "LIVE_THREAT_LOG",
+                    "payload": {
+                        "agent": event.source, # e.g. "agent_theta" (Prism)
+                        "threat_type": threat_type,
+                        "url": real_payload.get("url", "Unknown Source"),
+                        "severity": severity,
+                        "timestamp": datetime.now().strftime("%H:%M:%S"),
+                        "risk_score": risk_score
+                    }
+                })
+
+            # REAL-TIME GRAPH ANIMATION (Visual Heartbeat)
+            elif event.type == EventType.LOG or event.type == EventType.JOB_ASSIGNED:
+                # Map specific agents to visual events
+                msg_type = None
+                
+                if "beta" in event.source.lower() or "breaker" in event.source.lower():
+                    msg_type = "ATTACK_HIT" # Purple/Red pulses
+                elif "alpha" in event.source.lower() or "scout" in event.source.lower():
+                    msg_type = "RECON_PACKET" # Blue/Cyan pulses
+                elif "sigma" in event.source.lower():
+                     msg_type = "GI5_CRITICAL" # Special AI pulse
+                
+                if msg_type:
+                    # Lightweight broadcast for visual effects
+                    await manager.broadcast({
+                        "type": msg_type,
+                        "payload": {
+                            "source": event.source,
+                            "timestamp": datetime.now().isoformat()
+                        }
+                    })
 
         # Subscribe Recorder to Everything for maximum fidelity
         for etype in EventType:
@@ -118,11 +157,35 @@ class HiveOrchestrator:
         # AWAKENING: The Smith and The Librarian
         sigma = SigmaAgent(bus)
         kappa = KappaAgent(bus) 
+        
+        # AWAKENING: The Sentinel and The Inspector (Purple Team Expansion)
+        # AWAKENING: The Sentinel and The Inspector (Purple Team Expansion)
+        sentinel = AgentTheta(bus)
+        inspector = AgentIota(bus) 
 
         # 4. Wake Up the Hive
-        agents = [scout, breaker, analyst, strategist, cortex, sigma, kappa]
+        # DATA WIRING: Pass Mission Profile
+        mission_profile = {
+            "modules": target_config.get("modules", []),
+            "filters": target_config.get("filters", []),
+            "scope": target_config.get("url", "")
+        }
+        
+        agents = [scout, breaker, analyst, strategist, cortex, sigma, kappa, sentinel, inspector]
         for agent in agents:
+            agent.mission_config = mission_profile # Inject Config
             await agent.start()
+            
+        # Register in Global State
+        HiveOrchestrator.active_agents["THETA"] = sentinel
+        HiveOrchestrator.active_agents["IOTA"] = inspector
+        HiveOrchestrator.active_agents["OMEGA"] = strategist
+        HiveOrchestrator.active_agents["ALPHA"] = scout
+        HiveOrchestrator.active_agents["BETA"] = breaker
+        HiveOrchestrator.active_agents["GAMMA"] = analyst
+        HiveOrchestrator.active_agents["ZETA"] = cortex
+        HiveOrchestrator.active_agents["SIGMA"] = sigma
+        HiveOrchestrator.active_agents["KAPPA"] = kappa
             
         await manager.broadcast({"type": "GI5_LOG", "payload": "SINGULARITY V5 ONLINE. The Cortex is watching."})
         await manager.broadcast({"type": "SCAN_UPDATE", "payload": {"id": scan_id, "status": "Running"}})
@@ -131,18 +194,10 @@ class HiveOrchestrator:
         await bus.publish(HiveEvent(
             type=EventType.TARGET_ACQUIRED,
             source="Orchestrator",
-            payload={"url": target_config['url']}
+            payload={"url": target_config['url'], "tech_stack": ["Unknown"]} 
         ))
 
         await manager.broadcast({"type": "GI5_LOG", "payload": "HYPER-MIND ONLINE. Neural Negotiation Active."})
-        await manager.broadcast({"type": "SCAN_UPDATE", "payload": {"id": scan_id, "status": "Running"}})
-
-        # 5. Seed the Mission (Redundant Target Acquired removed, single seed is enough usually, but strictly following legacy flow)
-        await bus.publish(HiveEvent(
-            type=EventType.TARGET_ACQUIRED,
-            source="Orchestrator",
-            payload={"url": target_config['url'], "tech_stack": ["Unknown"]} 
-        ))
 
         # 6. Run Duration (Max 3 minutes for in-depth scanning)
         scan_duration = settings.SCAN_TIMEOUT  # 180 seconds
@@ -153,6 +208,8 @@ class HiveOrchestrator:
         finally:
             await manager.broadcast({"type": "GI5_LOG", "payload": "Hyper-Mind: Mission Complete. Shutting down."})
             for agent in agents: await agent.stop()
+            # Clear registry
+            HiveOrchestrator.active_agents.clear()
             
             # --- GENERATE GOD MODE REPORT ---
             items_found = [e for e in scan_events if e['type'] == EventType.VULN_CONFIRMED]

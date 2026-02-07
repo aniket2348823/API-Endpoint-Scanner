@@ -53,9 +53,22 @@ class AlphaAgent(BaseAgent):
             ))
 
         # Cyber-Organism Protocol: Target Acquisition
+        # DATA WIRING: Respect "filters" from Mission Config
+        filters = getattr(self, "mission_config", {}).get("filters", [])
+        
+        # Default sensitive paths
         sensitive_paths = ["/order", "/user", "/account", "/profile"]
+        
+        # Extend sensitivity based on filters
+        if "Financial Logic" in filters:
+            sensitive_paths.extend(["/pay", "/wallet", "/invoice", "/cart"])
+        if "Auth & Session" in filters:
+            sensitive_paths.extend(["/login", "/token", "/oauth", "/sso"])
+        if "PII Data" in filters:
+            sensitive_paths.extend(["/me", "/settings", "/export", "/gdpr"])
+
         if any(p in packet.target.url.lower() for p in sensitive_paths):
-            print(f"[{self.name}]: [TARGET] IDOR Target Acquired. Tagging for Doppelganger.")
+            print(f"[{self.name}]: [TARGET] Priority Target Acquired ({filters}). Tagging for Doppelganger.")
             
             await self.bus.publish(HiveEvent(
                 type=EventType.TARGET_ACQUIRED,
@@ -75,7 +88,7 @@ class AlphaAgent(BaseAgent):
             result = await module.execute(packet)
             
             # REAL-TIME SYNC
-            if result.success:
+            if result.status in ["SUCCESS", "VULN_FOUND"]:
                 severity = "High" if "auth" in module_id else "Medium"
                 await self.bus.publish(HiveEvent(
                     type=EventType.VULN_CONFIRMED,
